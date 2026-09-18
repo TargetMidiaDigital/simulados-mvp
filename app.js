@@ -141,7 +141,7 @@ function itensDaSequencia(texto) {
   return texto.replace(/\.$/, "").split(",").map((s) => s.trim().toLowerCase());
 }
 
-const afirmativasCitadas = (texto) => texto.match(/\b(IV|III|II|I)\b/g) || [];
+const afirmativasCitadas = (texto) => texto.match(/\b(VIII|VII|VI|IV|V|III|II|I)\b/g) || [];
 
 function explicacao(q, letra) {
   if (q.explicacoes && q.explicacoes[letra]) return q.explicacoes[letra];
