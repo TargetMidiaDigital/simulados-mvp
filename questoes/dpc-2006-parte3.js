@@ -2,6 +2,7 @@
 QUESTOES.push(
   {
     id: "dpc2006-49",
+    prova: "DPC 2006",
     tema: "COLREG / RIPEAM",
     enunciado: "According to International Regulations for Preventing Collisions at Sea, 1972 – COLREG, the use of the danger signal __________.",
     alternativas: {
@@ -22,6 +23,7 @@ QUESTOES.push(
   },
   {
     id: "dpc2006-50",
+    prova: "DPC 2006",
     tema: "COLREG / RIPEAM",
     enunciado: "What does the word \"breadth\" mean, according to International Regulations for Preventing Collisions at Sea, 1972 – COLREG?",
     alternativas: {
@@ -42,6 +44,7 @@ QUESTOES.push(
   },
   {
     id: "dpc2006-51",
+    prova: "DPC 2006",
     tema: "GMDSS e Comunicações",
     tipo: "sequencia",
     enunciado: `O Prático Fritz observou que, durante a manobra do navio-tanque “BLUE RIVER”, o Comandante Petkowitch estava empregando frases que provavelmente não estavam de acordo com o vocabulário padrão. De acordo com a resolução A.918(22) da IMO, que adotou o Standard Marine Communication Phrases (SMCP), assinale com (E) as frases que devem ser evitadas e com (C) as frases que devem ser usadas:
@@ -70,6 +73,7 @@ QUESTOES.push(
   },
   {
     id: "dpc2006-52",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     enunciado: "Pilot Gabriela needs to reduce as fast as possible the speed of a ship with 16 knots, in an emergency situation. The lateral sea room permits all available maneuvers. What is the better maneuver to be executed by Gabriela, as function of ship’s actual speed, according to “Principles of Naval Architecture”?",
     alternativas: {
@@ -90,6 +94,7 @@ QUESTOES.push(
   },
   {
     id: "dpc2006-53",
+    prova: "DPC 2006",
     tema: "Rebocadores",
     enunciado: "According with reference book “Tug Use in Port”, what is a rotor tug?",
     alternativas: {
@@ -110,6 +115,7 @@ QUESTOES.push(
   },
   {
     id: "dpc2006-54",
+    prova: "DPC 2006",
     tema: "Manobra do Navio",
     tipo: "afirmativas",
     revisar: true,
@@ -137,6 +143,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-55",
+    prova: "DPC 2006",
     tema: "Rebocadores",
     enunciado: "In the book “Tug Use in Port”, Captain Henk Hensen states that, despite other risk situations, the critical situations a tug may be involved in can be simply divided as follows:",
     alternativas: {
@@ -157,6 +164,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-56",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     revisar: true,
     enunciado: "According to the studies of Chase, stated in the book “Principles of Naval Architecture”, when clearing a ship slip, what is the adequate criterion for judging backing speed with respect to ship operators’ (Pilot included) opinion?",
@@ -178,6 +186,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-57",
+    prova: "DPC 2006",
     tema: "Arte Naval",
     enunciado: "Assinale a afirmativa correta, com relação à nomenclatura do navio, de acordo com Maurílio M. Fonseca, no livro Arte Naval:",
     alternativas: {
@@ -198,6 +207,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-58",
+    prova: "DPC 2006",
     tema: "Navegação",
     enunciado: "O alcance geográfico dos faróis, em milhas náuticas, considera os olhos (desarmados) do navegante elevados sobre o nível do mar. Para qual elevação do olho do observador são determinados os alcances geográficos indicados nas publicações da DHN?",
     alternativas: {
@@ -218,6 +228,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-59",
+    prova: "DPC 2006",
     tema: "Meteorologia e Oceanografia",
     enunciado: "Na interpretação de uma carta sinótica de pressão ao nível do mar, a configuração das isóbaras e a simbologia padrão das frentes ressaltam a situação do sistema frontal. Um navegante no oceano Atlântico Sul identifica a ocorrência de uma frente estacionária quando observa a seguinte situação, de acordo com Lobo e Soares, no livro “Meteorologia e Oceanografia”:",
     alternativas: {
@@ -238,6 +249,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-60",
+    prova: "DPC 2006",
     tema: "COLREG / RIPEAM",
     enunciado: "The International Regulations for Preventing Collisions at Sea, 1972 – COLREG states that certain factors are to be taken into account when determining safe speed. One of the factors is the __________.",
     alternativas: {
@@ -258,6 +270,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-61",
+    prova: "DPC 2006",
     tema: "COLREG / RIPEAM",
     enunciado: "Pilot Ferreira, on board of the tanker “MARIA”, working at night, underway in Amazon River, looks at a target that seems to be another vessel underway. He can distinguish the sidelights and masthead light, as well as a high-intensity all-round flashing red light. Checking the COLREG/72, he concluded that:",
     alternativas: {
@@ -278,6 +291,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-62",
+    prova: "DPC 2006",
     tema: "COLREG / RIPEAM",
     enunciado: "In fog, you hear apparently forward of your beam a fog signal of 2 prolonged blasts in succession every two minutes. This signal indicates a __________, according to COLREG.",
     alternativas: {
@@ -298,6 +312,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-63",
+    prova: "DPC 2006",
     tema: "COLREG / RIPEAM",
     enunciado: "According to COLREG, a vessel showing a yellow light over a white light at night is a vessel __________.",
     alternativas: {
@@ -318,6 +333,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-64",
+    prova: "DPC 2006",
     tema: "Meteorologia e Oceanografia",
     revisar: true,
     enunciado: "Durante a observação dos elementos meteorológicos, à superfície do mar e do continente, na ocorrência de brisa marítima, o navegante constata o seguinte, de acordo com Lobo e Soares, no livro “Meteorologia e Oceanografia”:",
@@ -339,6 +355,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-65",
+    prova: "DPC 2006",
     tema: "Manobra do Navio",
     revisar: true,
     enunciado: "Alguns Comandantes não gostam de fundear com dois ferros, embora isto seja útil quando se deseja limitar o giro do navio em um fundeadouro pequeno. A razão se deve, principalmente, aos problemas para evitar enrascar as amarras, em casos onde a intensidade e a direção da corrente e do vento são variáveis. Qual das alternativas abaixo NÃO constitui uma ação efetiva e confiável a ser tomada, quando o navio já estiver amarrado a dois ferros, em presença de vento e corrente, de acordo com Daniel H. MacElrevey, em “Shiphandling for the Mariner”?",
@@ -360,6 +377,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-66",
+    prova: "DPC 2006",
     tema: "GMDSS e Comunicações",
     enunciado: "Which statement concerning reserve sources of energy for GMDSS is FALSE?",
     alternativas: {
@@ -380,6 +398,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-67",
+    prova: "DPC 2006",
     tema: "COLREG / RIPEAM",
     enunciado: "A vessel is considered to be \"restricted in her ability to maneuver\" under COLREG if she is __________.",
     alternativas: {
@@ -400,6 +419,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-68",
+    prova: "DPC 2006",
     tema: "Manobra do Navio",
     revisar: true,
     enunciado: `Eram 07:00h da manhã de um lindo dia de primavera quando o Prático embarcou pela escada de quebra-peito, a boreste. No passadiço, lutava contra os raios de sol que vinham diretamente da proa para ler a “Folha de Informações para o Prático”. Não era um navio muito grande: 170 metros de comprimento total, 8,50 metros de calado, hélice de passo controlável direito, um potente motor de 11.000 BHP, 23,40 metros de boca. Da asa de bombordo admirou a vista do outro lado do canal: águas paradas e falta de vento.
@@ -422,6 +442,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-69",
+    prova: "DPC 2006",
     tema: "COLREG / RIPEAM",
     enunciado: "According to COLREG, while underway in a fog you hear a signal of three strokes of a bell, a rapid ringing of the bell, and three more strokes of the bell. This signal is made by a vessel __________.",
     alternativas: {
@@ -442,6 +463,7 @@ IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para 
   },
   {
     id: "dpc2006-70",
+    prova: "DPC 2006",
     tema: "Código Internacional de Sinais",
     revisar: true,
     enunciado: "O navio “JOSEFINA”, na ZP-01, já com o prático a bordo, navegando nas proximidades do município de Mazagão, colidiu com um tronco de árvore submerso. Qual a mensagem a ser transmitida, de acordo com o Código Internacional de Sinais (CIS), quando questionado pela Autoridade Marítima por meio da abreviatura HV?",

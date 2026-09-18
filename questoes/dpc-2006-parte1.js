@@ -3,6 +3,7 @@
 QUESTOES.push(
   {
     id: "dpc2006-01",
+    prova: "DPC 2006",
     tema: "Arte Naval",
     tipo: "sequencia",
     enunciado: `Associe os termos náuticos da coluna A com a coluna B, com relação aos termos náuticos referentes aos cabos e sua manobra, de acordo com Maurílio M. Fonseca, no livro Arte Naval:
@@ -39,6 +40,7 @@ COLUNA B
   },
   {
     id: "dpc2006-02",
+    prova: "DPC 2006",
     tema: "Código Internacional de Sinais",
     enunciado: "Bandeira retangular nas cores preto, amarelo, azul e encarnado em quatro triângulos, formados pelas diagonais, sendo preto o triângulo junto à tralha, amarelo o superior, azul o da extremidade e encarnado o inferior, de acordo com o Código Internacional de Sinais (CIS), significa:",
     alternativas: {
@@ -59,6 +61,7 @@ COLUNA B
   },
   {
     id: "dpc2006-03",
+    prova: "DPC 2006",
     tema: "Meteorologia e Oceanografia",
     revisar: true,
     enunciado: "Na interpretação de uma carta sinótica de pressão ao nível do mar, o navegante identifica em uma região de ocorrência de cavado, no oceano Atlântico Sul, uma área com vento forte de SW, quando observa-se, de acordo com Lobo e Soares, no livro “Meteorologia e Oceanografia”, as seguintes características:",
@@ -80,6 +83,7 @@ COLUNA B
   },
   {
     id: "dpc2006-04",
+    prova: "DPC 2006",
     tema: "Sinalização Náutica",
     revisar: true,
     enunciado: "O Prático Roberto Carlos estava navegando em um rio quando avistou uma sinalização náutica instalada na margem direita, com as seguintes características: cruz na cor preta em um painel quadrangular na cor laranja, com o braço horizontal visivelmente mais fino. De acordo com a publicação da DHN denominada Lista de Sinais Cegos, a referida sinalização náutica é um sinal de recomendação para:",
@@ -101,6 +105,7 @@ COLUNA B
   },
   {
     id: "dpc2006-05",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     tipo: "afirmativas",
     enunciado: `O Prático Sacramento, da asa do passadiço do navio mercante, observou o movimento turbulento da água nas proximidades do casco, em uma camada limite que aumenta em extensão, a partir da proa para a popa. Sacramento percebeu que existe algum tipo de troca de energia entre o casco e o meio fluido. Esta energia é suprida pelo sistema propulsivo do navio. Sacramento compreendeu que mantendo a rotação e velocidade do navio, em um canal varrido, podia verificar a presença de correntes longitudinais, conforme a camada limite se alargava ou se estreitava. Sacramento, então, passou a fazer uso constante dessa observação em suas manobras.
@@ -127,6 +132,7 @@ IV) Falsa — em baixas velocidades a resistência friccional é a parcela ampla
   },
   {
     id: "dpc2006-06",
+    prova: "DPC 2006",
     tema: "Rebocadores",
     tipo: "sequencia",
     enunciado: `Coloque (F) falso ou (V) verdadeiro nas afirmativas abaixo, em relação a propulsores e sistemas de governo empregados em rebocadores, de acordo com o livro “Tug Use in Port”, recomendado pela Circular da IMO MSC 1101:
@@ -153,6 +159,7 @@ IV) Falsa — em baixas velocidades a resistência friccional é a parcela ampla
   },
   {
     id: "dpc2006-07",
+    prova: "DPC 2006",
     tema: "Rebocadores",
     enunciado: "O Prático Aroldo está a bordo de um rebocador convencional, parado em relação ao fundo, equipado com dois propulsores de passo fixo e dois lemes. Será necessário mover a embarcação somente com movimento lateral para boreste, sem alterar o rumo. Sabendo-se que as forças ambientais são desprezíveis, qual dos comandos abaixo pode mover a embarcação na deriva lateral desejada, de acordo com o livro “Tug Use in Port”, recomendado pela Circular da IMO MSC 1101?",
     alternativas: {
@@ -173,6 +180,7 @@ IV) Falsa — em baixas velocidades a resistência friccional é a parcela ampla
   },
   {
     id: "dpc2006-08",
+    prova: "DPC 2006",
     tema: "Rebocadores",
     tipo: "sequencia",
     enunciado: `Correlacione os tipos de rebocadores com suas características, segundo o guia “Tug Use in Port”, referência da circular MSC 1101 da IMO, assinalando, a seguir, a opção correta:
@@ -209,6 +217,7 @@ Características:
   },
   {
     id: "dpc2006-09",
+    prova: "DPC 2006",
     tema: "Rebocadores",
     tipo: "sequencia",
     enunciado: `Atualmente, a força de tração nos cabos de reboque tem levado à ruptura de cabeços e buzinas de navios. Este fato, segundo Otávio e Marcelo, no livro “Rebocadores Portuários”, do CONAPRA, tem se tornado perigosamente frequente, principalmente em operações de escolta. O aumento de frequência desse tipo de acidente levou a OCIMF (Oil Companies International Marine Forum) a preparar um documento recomendando, entre outras normas de segurança, que exista uma troca de informações entre o Prático e o Comandante do navio. Esta recomendação está no Anexo 4 do livro supracitado.
@@ -235,6 +244,7 @@ Informações que fluem no sentido inverso, do Comandante para o Prático (F): q
   },
   {
     id: "dpc2006-10",
+    prova: "DPC 2006",
     tema: "Legislação e Normas",
     tipo: "sequencia",
     revisar: true,
@@ -263,6 +273,7 @@ Coloque F (falso) ou V (verdadeiro), de acordo com as Normas da Autoridade Marí
   },
   {
     id: "dpc2006-11",
+    prova: "DPC 2006",
     tema: "Legislação e Normas",
     revisar: true,
     enunciado: "Após ler o acórdão do Tribunal Marítimo (TM), relativo a um acidente de navegação no qual fora arrolado como Prático da manobra, João Manoel constatou que recebera multa de 40 UFIR. Porém, o TM converteu a multa em suspensão. De acordo com a Lei n° 2.180/54, que dispõe sobre o Tribunal Marítimo, quantos dias de suspensão o TM aplicou ao Prático João Manoel?",
@@ -284,6 +295,7 @@ Coloque F (falso) ou V (verdadeiro), de acordo com as Normas da Autoridade Marí
   },
   {
     id: "dpc2006-12",
+    prova: "DPC 2006",
     tema: "Manobra do Navio",
     enunciado: "Independente de diferentes formas e tamanhos, o comportamento de qualquer navio sofre a influência de um grande número de fatores e interações. Entre eles, o efeito das águas rasas. A razão profundidade x calado fornece um parâmetro objetivo da intensidade de tal efeito em relação à manobra do navio. De acordo com Daniel H. MacElrevey, em “Shiphandling for the Mariner”, quais valores limites expressam a razão acima mencionada, respectivamente, quando o efeito das águas rasas é sentido em sua plenitude e quando esse efeito se torna significativo?",
     alternativas: {
@@ -304,6 +316,7 @@ Coloque F (falso) ou V (verdadeiro), de acordo com as Normas da Autoridade Marí
   },
   {
     id: "dpc2006-13",
+    prova: "DPC 2006",
     tema: "Manobra do Navio",
     revisar: true,
     enunciado: "When using an anchor as a shiphandling tool, which of the following statements contains FALSE information, according to Daniel H. MacElrevey, in “Shiphandling for the Mariner”?",
@@ -325,6 +338,7 @@ Coloque F (falso) ou V (verdadeiro), de acordo com as Normas da Autoridade Marí
   },
   {
     id: "dpc2006-14",
+    prova: "DPC 2006",
     tema: "Meteorologia e Oceanografia",
     enunciado: "Um navegante observando o estado do mar e o estado do tempo, no oceano Atlântico Sul, em dia de céu limpo, sem vento e ondas, identifica em determinado azimute surgirem no horizonte, em altos níveis, nuvens cirrus de cristais de gelo, com acentuado deslocamento na direção do navio. Na interpretação dessa situação, o navegante pode concluir a seguinte previsão do tempo, de acordo com Lobo e Soares, no livro “Meteorologia e Oceanografia”:",
     alternativas: {
@@ -345,6 +359,7 @@ Coloque F (falso) ou V (verdadeiro), de acordo com as Normas da Autoridade Marí
   },
   {
     id: "dpc2006-15",
+    prova: "DPC 2006",
     tema: "Meteorologia e Oceanografia",
     revisar: true,
     enunciado: "Na interpretação de uma imagem de satélite meteorológico, canal infravermelho, do oceano Atlântico Sul, as regiões com ocorrências de um cavado e o sistema frontal associado serão identificadas pelas seguintes características da imagem, de acordo com Lobo e Soares, no livro “Meteorologia e Oceanografia”:",
@@ -366,6 +381,7 @@ Coloque F (falso) ou V (verdadeiro), de acordo com as Normas da Autoridade Marí
   },
   {
     id: "dpc2006-16",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     tipo: "afirmativas",
     enunciado: `No dia 20 de junho de 2006, a Prático Ana, em um navio VLCC carregado, com 300.000 toneladas de porte bruto e calado de 22 metros, verificou, em um longo trecho seguro e em águas profundas, que a velocidade de equilíbrio do navio para a rotação máxima era de 14 nós. As forças ambientais eram desprezíveis.
@@ -393,6 +409,7 @@ IV) Verdadeira — para a mesma rotação, quanto maior a velocidade de avanço 
   },
   {
     id: "dpc2006-17",
+    prova: "DPC 2006",
     tema: "Manobra do Navio",
     enunciado: `O Prático Manoel, a bordo do navio graneleiro DOCEBAY, tipo “capesize”, observou que o diâmetro tático da curva de giro, fixada no passadiço, era de 3 Lpp. Em uma situação de emergência, necessitava executar uma curva de giro, mas sua velocidade não era a de cruzeiro correspondente à rotação máxima. Verificou então na tabela de rotação x velocidade:
 
@@ -419,6 +436,7 @@ Estando o navio na velocidade de equilíbrio para a rotação comandada, com qua
   },
   {
     id: "dpc2006-18",
+    prova: "DPC 2006",
     tema: "Rebocadores",
     tipo: "afirmativas",
     revisar: true,
@@ -445,6 +463,7 @@ IV) Falsa — o ponto de reboque do trator fica a ré; com o cabo passado é a p
   },
   {
     id: "dpc2006-19",
+    prova: "DPC 2006",
     tema: "Rebocadores",
     tipo: "sequencia",
     enunciado: `Coloque falso (F) ou verdadeiro (V) nas afirmativas abaixo, em relação aos modos de operação de rebocadores com cabo passado na popa do navio assistido, de acordo com Henk Hensen, no livro “Tug Use in Port”:
@@ -471,6 +490,7 @@ IV) Falsa — o ponto de reboque do trator fica a ré; com o cabo passado é a p
   },
   {
     id: "dpc2006-20",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     tipo: "afirmativas",
     enunciado: `Em 1964, Moody verificou que as qualidades de governo de alguns navios eram tão baixas que chegavam a impedir a entrada dos mesmos em águas restritas. Moody sugeriu, então, uma solução prática: operar com um rebocador com cabo curto passado na popa do navio. Seus estudos, relatados em “Princípios de Arquitetura Naval”, descrevem que, estando o rebocador com o cabo passado na popa do navio:
@@ -497,6 +517,7 @@ IV) Falsa — há interação: o arrasto imposto pelo rebocador altera justament
   },
   {
     id: "dpc2006-21",
+    prova: "DPC 2006",
     tema: "Arte Naval",
     revisar: true,
     enunciado: "Assinale a afirmativa correta, com relação a poleame, aparelhos de laborar e acessórios, de acordo com Maurílio M. Fonseca, no livro Arte Naval:",
@@ -518,6 +539,7 @@ IV) Falsa — há interação: o arrasto imposto pelo rebocador altera justament
   },
   {
     id: "dpc2006-22",
+    prova: "DPC 2006",
     tema: "Arte Naval",
     revisar: true,
     enunciado: "Assinale a afirmativa correta, com relação a aparelho de fundear e suspender, de acordo com Maurílio M. Fonseca, no livro Arte Naval:",
@@ -539,6 +561,7 @@ IV) Falsa — há interação: o arrasto imposto pelo rebocador altera justament
   },
   {
     id: "dpc2006-23",
+    prova: "DPC 2006",
     tema: "Cerimonial",
     enunciado: "O navio mercante “Ipanema”, arvorando bandeira brasileira, com arqueação bruta igual a 23.958, atracado no porto do Rio de Janeiro, descarregava produto químico. Por volta das 09:30h ocorreu um vazamento da carga, o que levou ao falecimento de um tripulante. Além das providências inerentes ao fato, o Comandante determinou ao Oficial de Serviço cumprir as Normas do Cerimonial, por ter ocorrido falecimento a bordo, até o corpo do tripulante ser retirado de bordo. Atendendo às Normas do Cerimonial, podemos concluir que o Oficial de Serviço teve o seguinte procedimento:",
     alternativas: {
@@ -559,6 +582,7 @@ IV) Falsa — há interação: o arrasto imposto pelo rebocador altera justament
   },
   {
     id: "dpc2006-24",
+    prova: "DPC 2006",
     tema: "Legislação e Normas",
     revisar: true,
     enunciado: "O navio-tanque “Itajubá”, bandeira brasileira, comprimento total de 182,90 metros, arqueação bruta igual a 26.639, demandava o porto de São Luís – MA, carregando óleo diesel, com calado de 11,90 metros. Tendo em vista a prioridade na atracação, não teria fundeio. O Prático embarcou no ponto de espera de práticos determinado nas Normas da Autoridade Marítima para o Serviço de Praticagem – NORMAM-12/DPC. Diante desse relato, podemos afirmar que:",

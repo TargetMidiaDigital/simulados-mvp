@@ -2,6 +2,7 @@
 QUESTOES.push(
   {
     id: "dpc2006-25",
+    prova: "DPC 2006",
     tema: "GMDSS e Comunicações",
     enunciado: "What is the responsibility of vessels under GMDSS?",
     alternativas: {
@@ -22,6 +23,7 @@ QUESTOES.push(
   },
   {
     id: "dpc2006-26",
+    prova: "DPC 2006",
     tema: "Manobra do Navio",
     enunciado: "Nowadays mariners are getting used to count on modern aids for docking and undocking maneuvers, like bow thrusters, stern thrusters, controllable pitch propellers and so on. Nevertheless, there are still lots of ships not fitted with these devices. Furthermore, sometimes not even a single tug is available. When facing such a situation, an accomplished shiphandler will use the ship’s characteristics combined with the forces of nature, say wind and current, as an aid rather than a hindrance. Considering a single screw right hand turning propeller ship on a berthing maneuver, which of the following assertives contains INCORRECT information, according to Daniel H. MacElrevey?",
     alternativas: {
@@ -42,6 +44,7 @@ QUESTOES.push(
   },
   {
     id: "dpc2006-27",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     tipo: "afirmativas",
     enunciado: `O Prático Joaquim estava preocupado. Na barra, onde iria embarcar para pegar um navio tipo “capesize”, na condição de meia carga, já existia um estado de mar definido em função do vento local. Ele sabia que o abatimento do navio seria dado pela força devida às ondas do mar e pela força do vento. Ele consultou um professor que, fundamentado em autores como Van Berlekom, citado em “Princípios de Arquitetura Naval”, afirmou:
@@ -67,6 +70,7 @@ IV) Falsa — o gradiente de velocidade do vento existe, mas um capesize a meia 
   },
   {
     id: "dpc2006-28",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     enunciado: "O Prático Benedito observou, a bordo do navio petroleiro MAYSA, que o vento relativo estava entrando pela amura de boreste (30° em relação à proa) e que sua intensidade tinha aumentado de 10 para 25 nós. Ele recomendou ao Comandante que colocasse o navio afilado ao vento. Com essa atitude, e mantendo a rotação da máquina do navio, pode-se dizer, fundamentando-se em “Princípios de Arquitetura Naval”, que:",
     alternativas: {
@@ -87,6 +91,7 @@ IV) Falsa — o gradiente de velocidade do vento existe, mas um capesize a meia 
   },
   {
     id: "dpc2006-29",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     tipo: "afirmativas",
     enunciado: `O Comandante Raimundo, de um navio petroleiro tipo “panamax”, com velocidade média acima de 8 nós, em águas parelhas e com coeficiente prismático de 0,86, perguntou ao Prático Antonio: “Posso lastrar os tanques de ré para derrabar meu navio, considerando que ele anda melhor derrabado?” Antonio fez as seguintes considerações:
@@ -113,6 +118,7 @@ IV) Verdadeira — em navios de grande deslocamento o ganho obtido com mudança 
   },
   {
     id: "dpc2006-30",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     tipo: "sequencia",
     enunciado: `O Prático João, a bordo de um navio tipo “panamax”, em baixa velocidade e em águas profundas, solicitou “meia força adiante”. Passados 30 minutos, verificou que ocorreu um aumento de rotação do propulsor, no entanto a velocidade do navio praticamente não variou. Da asa do passadiço, verificou que o perfil de ondas irradiadas pelo navio tinha variado em amplitude e as ondas sofriam efeitos de interferência entre elas. João entendeu que, naquela condição de velocidade, a resistência ao avanço era muito afetada pelas ondas irradiadas.
@@ -136,6 +142,7 @@ A interferência entre esses sistemas produz as lombadas ("humps") e depressões
   },
   {
     id: "dpc2006-31",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     tipo: "afirmativas",
     enunciado: `Pilot Richard is studying momentum theory of propeller action. Richard pointed out the following notes about propeller’s momentum theory:
@@ -161,6 +168,7 @@ IV) Falsa — a afluência ilimitada de água é hipótese da teoria, mas o esco
   },
   {
     id: "dpc2006-32",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     enunciado: "Qual das manobras padrão abaixo relacionadas indica a habilidade que o leme tem para governar o navio, de acordo com “Princípios de Arquitetura Naval”?",
     alternativas: {
@@ -181,6 +189,7 @@ IV) Falsa — a afluência ilimitada de água é hipótese da teoria, mas o esco
   },
   {
     id: "dpc2006-33",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     tipo: "afirmativas",
     enunciado: `Pilot Lúcia, working in a ship in shallow water, realized that she takes more horsepower to meet her required speed when compared with deep water condition. Lúcia listed the following notes:
@@ -206,6 +215,7 @@ IV) Falsa — as ondas em águas rasas exigem MAIS energia para a mesma velocida
   },
   {
     id: "dpc2006-34",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     enunciado: "O Prático Sebastião está na asa do passadiço do navio tipo “capesize” DOCEBAY, navegando a 8 nós, em águas profundas, com máquinas em meia força adiante. Sebastião observa as ondas irradiadas pelo navio e solicita máquina toda força adiante. Assim que o navio começa a aumentar a velocidade, pode-se dizer que as ondas geradas na proa:",
     alternativas: {
@@ -226,6 +236,7 @@ IV) Falsa — as ondas em águas rasas exigem MAIS energia para a mesma velocida
   },
   {
     id: "dpc2006-35",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     revisar: true,
     enunciado: "Entre 1971 e 1973, o professor Haruzo Eda, trabalhando para o Interoceanic Canal Study Project, realizou uma série de estudos experimentais e analíticos para prever o grau de leme necessário para manter um navio tipo em linha reta em um canal de navegação, variando-se a largura e a profundidade do canal em função das dimensões do navio. O padrão de segurança então adotado serviu de guia para estudos posteriores do USACE, da Guarda Costeira Americana e da PIANC. Qual foi o valor limite aceitável de ângulo de leme empregado pelo Professor Haruzo Eda, para fins de segurança e viabilidade de controle, para se manter um navio em linha reta quando se aproximando de uma margem em um canal de acesso, de acordo com “Princípios de Arquitetura Naval”?",
@@ -247,6 +258,7 @@ IV) Falsa — as ondas em águas rasas exigem MAIS energia para a mesma velocida
   },
   {
     id: "dpc2006-36",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     enunciado: "If a body is submerged in an ideal (inviscid) fluid, as the fluid flows around it there is a pressure distribution normal to the body. In the forward section of the hull there is a component of pressure resisting motion, and in the aft section there is a component of pressure assisting motion. In an ideal fluid these pressure forces are equal and the body experiences no resistance. However, water is not an ideal fluid. In the aft portion of the hull the boundary layer reduces the forward component of pressure. This reduction in the forward acting component results in a net resistance force that is called:",
     alternativas: {
@@ -267,6 +279,7 @@ IV) Falsa — as ondas em águas rasas exigem MAIS energia para a mesma velocida
   },
   {
     id: "dpc2006-37",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     tipo: "afirmativas",
     enunciado: `O Praticante de Prático Pedro, na asa do passadiço de um navio em movimento, observa que o mesmo irradia ondas. Essas ondas possuem energia, gerada pelo navio. A força de resistência devido às ondas geradas pelo navio depende, principalmente, da:
@@ -293,6 +306,7 @@ IV) Verdadeira — a velocidade é a variável principal do número de Froude.`,
   },
   {
     id: "dpc2006-38",
+    prova: "DPC 2006",
     tema: "Navegação",
     tipo: "afirmativas",
     enunciado: `O Sr. Délio Maury, respeitado e experiente Prático, ao embarcar em navio tipo PANAMAX em carregamento pleno, recebeu do Comandante Anésio as diretrizes do “Passage Planning”. Verificou, no plano de viagem, que as margens de segurança estavam traçadas fora de suas devidas posições. O Comandante avaliou as seguintes razões que levaram o Prático a essa conclusão:
@@ -319,6 +333,7 @@ IV) Falsa — falha de instrumento é contingência tratada no monitoramento, n�
   },
   {
     id: "dpc2006-39",
+    prova: "DPC 2006",
     tema: "Meteorologia e Oceanografia",
     enunciado: "O navegante observa na circulação geral dos oceanos o efeito da força de Coriolis, afetando as trajetórias das correntes oceânicas frias e quentes. No planejamento da derrota de um navio na costa nordeste e leste do Brasil, o navegante conclui, de acordo com Lobo e Soares, no livro “Meteorologia e Oceanografia”, que sua navegação costeira poderá sofrer os seguintes efeitos das correntes oceânicas:",
     alternativas: {
@@ -339,6 +354,7 @@ IV) Falsa — falha de instrumento é contingência tratada no monitoramento, n�
   },
   {
     id: "dpc2006-40",
+    prova: "DPC 2006",
     tema: "Meteorologia e Oceanografia",
     revisar: true,
     enunciado: "Na interpretação das curvas das marés de determinado porto, o navegante observa o comportamento dos elementos das marés ao longo do ciclo lunar e pode identificar os períodos e alturas das marés mais favoráveis à sua navegação. Dessa interpretação o navegante pode concluir, de acordo com Lobo e Soares, no livro “Meteorologia e Oceanografia”, o seguinte:",
@@ -360,6 +376,7 @@ IV) Falsa — falha de instrumento é contingência tratada no monitoramento, n�
   },
   {
     id: "dpc2006-41",
+    prova: "DPC 2006",
     tema: "Navegação",
     enunciado: "You are approaching a light fitted with a RACON. The light may be identified on the radar by __________.",
     alternativas: {
@@ -380,6 +397,7 @@ IV) Falsa — falha de instrumento é contingência tratada no monitoramento, n�
   },
   {
     id: "dpc2006-42",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     tipo: "afirmativas",
     revisar: true,
@@ -407,6 +425,7 @@ IV) Verdadeira — com máquina a ré o leme perde efetividade e prevalece o efe
   },
   {
     id: "dpc2006-43",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     tipo: "sequencia",
     revisar: true,
@@ -425,6 +444,7 @@ Repare na coerência interna exigida: a 1ª e a 5ª lacunas descrevem a mesma va
   },
   {
     id: "dpc2006-44",
+    prova: "DPC 2006",
     tema: "Rebocadores",
     tipo: "afirmativas",
     enunciado: `When analyzing capabilities and limitations of tugs, pilot Carlos pointed out the following notes:
@@ -450,6 +470,7 @@ IV) Verdadeira — um rebocador mantido em ângulo com o casco do navio com segu
   },
   {
     id: "dpc2006-45",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     revisar: true,
     enunciado: "Pilot Robert was afraid about the resultant movement due to sinkage and to bow-up rotation of a container ship with Blockage Coefficient = 0,83; he knows that in this case the trim can be negative (that is, bow down) owing to low-speed operation in shallow water. Robert, following the “Principles of Naval Architecture”, was introduced to the theoretical studies of Professor Tuck, and achieved a value to describe the hydraulic force (squat’s force) acting on the ship proceeding in a relatively narrow canal. What is the alternative that is NOT important in a Tuck’s squat calculation, used by Robert?",
@@ -471,6 +492,7 @@ IV) Verdadeira — um rebocador mantido em ângulo com o casco do navio com segu
   },
   {
     id: "dpc2006-46",
+    prova: "DPC 2006",
     tema: "Arquitetura Naval",
     tipo: "afirmativas",
     enunciado: `Pilot Joe Smith, when executing a “Z” maneuver in Chesapeake Bay, noted that it has the following numerical measures of control:
@@ -497,6 +519,7 @@ IV) "Reach" → ligado à capacidade de guinada/avanço da manobra, não à ante
   },
   {
     id: "dpc2006-47",
+    prova: "DPC 2006",
     tema: "Manobra do Navio",
     enunciado: "Depois de uma viagem de vários dias, vindo do Golfo Pérsico, o imponente VLCC estava a poucas milhas do ponto de recebimento de Prático da ZP de São Sebastião – SP. O Comandante decidiu começar a quebrar o seguimento, a fim de chegar ao ponto de recebimento do Prático com 3 a 4 nós. Apesar das manobras executadas, o embarque do Prático ocorreu com 9 nós. Qual é o método preferível e, frequentemente, mais prático para reduzir o seguimento do navio dentro do canal, de acordo com Daniel H. MacElrevey, em “Shiphandling for the Mariner”?",
     alternativas: {
@@ -517,6 +540,7 @@ IV) "Reach" → ligado à capacidade de guinada/avanço da manobra, não à ante
   },
   {
     id: "dpc2006-48",
+    prova: "DPC 2006",
     tema: "Legislação e Normas",
     tipo: "sequencia",
     revisar: true,

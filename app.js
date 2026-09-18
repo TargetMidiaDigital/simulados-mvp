@@ -319,7 +319,8 @@ function telaQuestao() {
       el("div", { class: "coluna-pergunta" },
         el("div", { class: "topbar" },
           el("span", {}, el("strong", {}, `Questão ${atual + 1}`), ` de ${questoes.length}`),
-          el("span", { class: "tema" }, q.tema || "")),
+          el("span", { class: "tema" }, q.tema || ""),
+          q.prova && el("span", { class: "prova" }, q.prova)),
         el("div", { class: "card" },
           enunciadoEl(q),
           el("div", { class: "alts" }, alts),
@@ -335,6 +336,15 @@ function telaQuestao() {
           el("span", { class: "rotulo" }, `Questões · ${respondidas} de ${questoes.length} respondidas`),
           navegador()),
         el("button", { class: "mini sair", onclick: sair }, "Sair do simulado"))));
+
+  // Mantém o número da questão atual visível dentro da grade (que rola sozinha
+  // quando há muitas questões), sem mexer na rolagem da página.
+  const grade = app.querySelector(".navegador");
+  const pontoAtual = grade && grade.querySelector(".ponto.atual");
+  if (pontoAtual) {
+    grade.scrollLeft = pontoAtual.offsetLeft - grade.offsetLeft - grade.clientWidth / 2 + pontoAtual.offsetWidth / 2;
+    grade.scrollTop = pontoAtual.offsetTop - grade.offsetTop - grade.clientHeight / 2 + pontoAtual.offsetHeight / 2;
+  }
 }
 
 function finalizar() {
@@ -430,6 +440,7 @@ function telaResultado() {
       el("summary", {},
         el("strong", {}, `Questão ${i + 1}`),
         el("span", { class: "tema" }, q.tema || ""),
+        q.prova && el("span", { class: "prova" }, q.prova),
         el("span", { class: "resumo" }, resumo)),
       enunciadoEl(q),
       el("div", { class: "alts" }, letras(q).map((letra) => {

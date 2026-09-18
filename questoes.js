@@ -3,6 +3,7 @@
 //
 // Formato de cada questão:
 //   id           identificador único
+//   prova        de onde veio a questão (ex.: "DPC 2008"); aparece ao lado do tema
 //   tema         assunto (aparece no topo da questão)
 //   enunciado    texto da pergunta (quebras de linha são preservadas)
 //   alternativas { A: "...", B: "...", ... }  (4 ou 5 alternativas)
