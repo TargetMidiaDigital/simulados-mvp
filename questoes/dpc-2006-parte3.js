@@ -1,0 +1,464 @@
+// Prova escrita DPC 2006 — questões 49 a 70.
+QUESTOES.push(
+  {
+    id: "dpc2006-49",
+    tema: "COLREG / RIPEAM",
+    enunciado: "According to International Regulations for Preventing Collisions at Sea, 1972 – COLREG, the use of the danger signal __________.",
+    alternativas: {
+      A: "replaces directional signals",
+      B: "makes the other vessel the stand-on vessel",
+      C: "indicates doubt as to another vessel’s actions",
+      D: "is the same as a \"MAYDAY\" signal",
+      E: "indicates that every vessel shall proceed at a safe speed.",
+    },
+    correta: "C",
+    explicacoes: {
+      A: "O sinal de perigo/dúvida não substitui os sinais de manobra (um, dois ou três apitos curtos), que continuam obrigatórios.",
+      B: "Nenhum sinal sonoro altera quem tem preferência; as responsabilidades decorrem das regras de governo.",
+      C: "Regra 34(d): cinco ou mais apitos curtos e rápidos indicam que a embarcação não compreende as intenções ou ações da outra, ou duvida de que a manobra seja suficiente para evitar colisão.",
+      D: "MAYDAY é sinal de socorro (Anexo IV), sem relação com o sinal de dúvida da Regra 34.",
+      E: "Velocidade de segurança é obrigação permanente da Regra 6, não algo indicado por sinal sonoro.",
+    },
+  },
+  {
+    id: "dpc2006-50",
+    tema: "COLREG / RIPEAM",
+    enunciado: "What does the word \"breadth\" mean, according to International Regulations for Preventing Collisions at Sea, 1972 – COLREG?",
+    alternativas: {
+      A: "Breadth on the uppermost continuous deck",
+      B: "Molded breadth",
+      C: "Greatest breadth",
+      D: "Breadth at the load waterline",
+      E: "Projected breadth",
+    },
+    correta: "C",
+    explicacoes: {
+      A: "A Regra 3(j) não se refere à boca no convés contínuo mais alto.",
+      B: "Boca moldada é conceito de arquitetura naval/arqueação, não a definição do COLREG.",
+      C: "Regra 3(j): \"length\" e \"breadth\" significam o comprimento de fora a fora e a boca MÁXIMA da embarcação.",
+      D: "A boca na linha d’água de carga não é a definição adotada pelo COLREG.",
+      E: "\"Projected breadth\" não é termo definido pelo COLREG.",
+    },
+  },
+  {
+    id: "dpc2006-51",
+    tema: "GMDSS e Comunicações",
+    tipo: "sequencia",
+    enunciado: `O Prático Fritz observou que, durante a manobra do navio-tanque “BLUE RIVER”, o Comandante Petkowitch estava empregando frases que provavelmente não estavam de acordo com o vocabulário padrão. De acordo com a resolução A.918(22) da IMO, que adotou o Standard Marine Communication Phrases (SMCP), assinale com (E) as frases que devem ser evitadas e com (C) as frases que devem ser usadas:
+
+( ) I will not overtake the vessel North of you.
+( ) Your position bearing 137 degrees from Big Head lighthouse distance 2.4 nautical miles.
+( ) I might enter the fairway.
+( ) You could be running into danger.
+( ) Pilot boat is bearing 215 degrees from you.
+( ) Dialog: Captain – “Blue River aft station. Stand by for making fast the tug on starboard quarter.” Second Officer – “Blue River bridge. The tug is fast.” Captain – “Blue River aft station. Let go the tug.”`,
+    alternativas: {
+      A: "(C), (E), (E), (E), (C) e (C)",
+      B: "(E), (C), (C), (C), (E) e (E)",
+      C: "(E), (C), (C), (E), (C) e (E)",
+      D: "(C), (E), (C), (C), (C) e (E)",
+      E: "(C), (C), (E), (E), (C) e (C)",
+    },
+    correta: "E",
+    comentario: `O SMCP manda evitar palavras ambíguas como "may", "might", "should" e "could", substituindo-as por formas inequívocas (ex.: "INTENTION: I will enter the fairway"; "WARNING: You are running into danger").
+1º (C) — "I will not overtake..." é afirmação inequívoca.
+2º (C) — posição por marcação e distância a partir de ponto notável, no formato padrão.
+3º (E) — usa "might".
+4º (E) — usa "could".
+5º (C) — marcação no formato padrão.
+6º (C) — diálogo com as frases padrão de manobra com rebocadores.`,
+  },
+  {
+    id: "dpc2006-52",
+    tema: "Arquitetura Naval",
+    enunciado: "Pilot Gabriela needs to reduce as fast as possible the speed of a ship with 16 knots, in an emergency situation. The lateral sea room permits all available maneuvers. What is the better maneuver to be executed by Gabriela, as function of ship’s actual speed, according to “Principles of Naval Architecture”?",
+    alternativas: {
+      A: "Rudder cycling.",
+      B: "Hard-over turn.",
+      C: "Crash astern.",
+      D: "Zig-zag.",
+      E: "Pull out.",
+    },
+    correta: "B",
+    explicacoes: {
+      A: "“Rudder cycling” é útil quando o espaço lateral é limitado; havendo espaço, perde para o giro com leme todo carregado.",
+      B: "Em alta velocidade e com espaço lateral livre, o giro com leme todo carregado é o que reduz a velocidade mais rapidamente e com o menor avanço: o arrasto do casco em deriva é muito maior que a força de frenagem do hélice a ré.",
+      C: "O “crash astern” a 16 nós resulta em longa distância de parada e perda de governo; o PNA mostra que o avanço é maior que o do giro.",
+      D: "O zigue-zague é manobra de ensaio de governo, não a forma mais eficaz de reduzir velocidade em emergência.",
+      E: "“Pull out” é ensaio de estabilidade direcional (soltar o leme após um giro), não manobra de parada.",
+    },
+  },
+  {
+    id: "dpc2006-53",
+    tema: "Rebocadores",
+    enunciado: "According with reference book “Tug Use in Port”, what is a rotor tug?",
+    alternativas: {
+      A: "An omnidirectional tug with four thrusters.",
+      B: "A tug with an azimuth thruster aft as main propulsion, and one forward as a kind of bow thruster.",
+      C: "A tug with two azimuth propellers with nozzles, in line, one forward and one aft.",
+      D: "A tractor tug with azimuth thrusters, but the skeg is replaced by a third azimuth thruster arranged on the tug’s centerline.",
+      E: "An ASD (Azimuth Stern Drive) tug with four thrusters fitted with nozzles designed for operations at ship’s side.",
+    },
+    correta: "D",
+    explicacoes: {
+      A: "O Rotor Tug tem três propulsores azimutais, não quatro.",
+      B: "Essa descrição é a de um rebocador tipo combi/azimutal com propulsor de proa, não do Rotor Tug.",
+      C: "Dois propulsores em linha, um a vante e um a ré, descrevem outro conceito (tipo SDM/“ship docking module”), não o Rotor Tug.",
+      D: "O Rotor Tug é um trator com dois azimutais a vante em que o skeg de ré foi substituído por um terceiro azimutal na linha de centro, dando grande manobrabilidade e tração em qualquer direção.",
+      E: "O Rotor Tug deriva do trator, não do ASD, e tem três propulsores.",
+    },
+  },
+  {
+    id: "dpc2006-54",
+    tema: "Manobra do Navio",
+    tipo: "afirmativas",
+    revisar: true,
+    enunciado: `Captain Crenshaw, in his book “Naval Shiphandling”, states that “Shiphandling is the art of handling the velocities of a ship”. A propeller produces side forces in addition to thrust along the propeller shaft. Pilot Antonio is studying propeller side force, on a single right-hand screw propeller, and knows that it can be broken down in four parts: following wake effect, inclination effect, helical discharge effect and shallow submergence effect. Antonio wrote the following considerations:
+
+I) The following wake effect produces a net force tending to move the stern to right and cause the ship to veer to the port.
+II) The inclination effect is a net effect that tends to twist the ship to the right.
+III) The shallow submergence effect tends the stern to starboard and causes the ship to veer to the left.
+IV) The helical discharge effect tends to turn the ship to the right.
+
+According to the book “Naval Shiphandling”:`,
+    alternativas: {
+      A: "I, II e III solely are true.",
+      B: "II e III solely are true.",
+      C: "I e IV solely are true.",
+      D: "III solely is true.",
+      E: "I solely is true.",
+    },
+    correta: "D",
+    comentario: `Hélice de passo direito, máquina adiante:
+I) Falsa — no efeito de esteira, as pás superiores trabalham em água mais lenta e produzem mais força; como se movem para boreste, a reação leva a popa para BOMBORDO (navio tende a boreste).
+II) Falsa — no efeito de inclinação do eixo, a pá que desce (lado de boreste) tem maior ângulo de ataque e mais empuxo; o empuxo descentrado para boreste torce o navio para a ESQUERDA.
+III) Verdadeira — com pouca imersão, as pás superiores perdem eficiência (ar/superfície); prevalecem as inferiores, que se movem para bombordo e levam a popa para boreste: o navio guina para a esquerda.
+IV) Falsa — a descarga helicoidal incidindo no leme tende a levar a popa para boreste, guinando o navio para a esquerda.`,
+  },
+  {
+    id: "dpc2006-55",
+    tema: "Rebocadores",
+    enunciado: "In the book “Tug Use in Port”, Captain Henk Hensen states that, despite other risk situations, the critical situations a tug may be involved in can be simply divided as follows:",
+    alternativas: {
+      A: "While passing a towline / When abeam of the forward shoulder of the ship.",
+      B: "When abeam of the forward shoulder of the ship / When the towline is secured.",
+      C: "When operating in a ship’s wake / When the towline is secured.",
+      D: "When operating in a ship’s wake / When abeam of the forward shoulder of the ship.",
+      E: "While passing a towline / While the towline is secured.",
+    },
+    correta: "E",
+    explicacoes: {
+      A: "A primeira parte está certa, mas estar no través do ombro de vante é um dos riscos (interação) DENTRO da fase de passagem do cabo, não uma das duas grandes divisões.",
+      B: "O ombro de vante é um caso particular de interação, não uma das duas categorias; falta a fase de passagem do cabo.",
+      C: "Operar na esteira do navio não é uma das duas divisões propostas pelo autor.",
+      D: "Nenhum dos dois itens é a divisão do autor; ambos são situações específicas de interação.",
+      E: "Hensen divide as situações críticas em dois momentos: ENQUANTO se passa o cabo (aproximação, interação com o navio) e ENQUANTO o cabo está passado (risco de girting/emborcamento).",
+    },
+  },
+  {
+    id: "dpc2006-56",
+    tema: "Arquitetura Naval",
+    revisar: true,
+    enunciado: "According to the studies of Chase, stated in the book “Principles of Naval Architecture”, when clearing a ship slip, what is the adequate criterion for judging backing speed with respect to ship operators’ (Pilot included) opinion?",
+    alternativas: {
+      A: "Astern speed achieved after the ship has traveled half ship length.",
+      B: "Astern speed achieved after the ship has traveled one ship length.",
+      C: "Astern speed achieved after the ship has traveled two ship lengths.",
+      D: "Astern speed achieved after the ship has traveled three ship lengths.",
+      E: "Astern speed achieved after the ship has traveled four ship lengths.",
+    },
+    correta: "B",
+    explicacoes: {
+      A: "Meio comprimento é distância curta demais para o navio ter livrado o berço.",
+      B: "Chase propôs julgar a capacidade de máquina a ré pela velocidade atingida depois de o navio percorrer UM comprimento — distância que corresponde a livrar o berço (slip).",
+      C: "Dois comprimentos excedem a distância de referência do critério (um comprimento).",
+      D: "Três comprimentos excedem a distância de referência do critério (um comprimento).",
+      E: "Quatro comprimentos excedem a distância de referência do critério (um comprimento).",
+    },
+  },
+  {
+    id: "dpc2006-57",
+    tema: "Arte Naval",
+    enunciado: "Assinale a afirmativa correta, com relação à nomenclatura do navio, de acordo com Maurílio M. Fonseca, no livro Arte Naval:",
+    alternativas: {
+      A: "Hastilhas – chapas colocadas verticalmente no fundo do navio, em cada caverna, aumentando a altura das cavernas na parte que se estende da quilha ao bojo.",
+      B: "Enoras – aberturas no convés por onde as amarras passam para o paiol.",
+      C: "Cinta – ferros perfilados, dispostos horizontalmente nas anteparas, a fim de reforçá-las.",
+      D: "Trincaniz – peças colocadas de proa a popa, na parte interna das cavernas, ligando-as entre si.",
+      E: "Buçardas – chapas que se colocam para encher os espaços vazios, entre duas chapas ou peças quaisquer.",
+    },
+    correta: "A",
+    explicacoes: {
+      A: "Definição correta de hastilha: chapa vertical no fundo, em cada caverna, que aumenta a altura desta entre a quilha e o bojo.",
+      B: "Enoras são as aberturas nos conveses por onde passam os MASTROS. A abertura por onde a amarra desce ao paiol é a gateira.",
+      C: "Cinta (cintado) é a fiada de chapas do costado na altura do convés resistente. Os reforços horizontais das anteparas são as travessas.",
+      D: "Trincaniz é a fiada de chapas do convés mais próxima do costado. As peças longitudinais que ligam as cavernas por dentro são as longarinas/escoas.",
+      E: "Buçardas são peças horizontais de reforço da proa (e da popa), ligando os dois bordos. As chapas de enchimento são os calços.",
+    },
+  },
+  {
+    id: "dpc2006-58",
+    tema: "Navegação",
+    enunciado: "O alcance geográfico dos faróis, em milhas náuticas, considera os olhos (desarmados) do navegante elevados sobre o nível do mar. Para qual elevação do olho do observador são determinados os alcances geográficos indicados nas publicações da DHN?",
+    alternativas: {
+      A: "3 metros",
+      B: "5 metros",
+      C: "12 metros",
+      D: "10 metros",
+      E: "15 metros",
+    },
+    correta: "B",
+    explicacoes: {
+      A: "3 metros não é a elevação padrão adotada pela DHN.",
+      B: "As publicações da DHN (Lista de Faróis e cartas) calculam o alcance geográfico para um observador com o olho elevado 5 metros acima do nível do mar. Para outra elevação, corrige-se pela tabela de alcance geográfico.",
+      C: "12 metros não é a elevação padrão adotada pela DHN.",
+      D: "10 metros não é a elevação padrão adotada pela DHN.",
+      E: "15 pés (≈ 4,6 m) é o padrão de publicações americanas/inglesas antigas, de onde vem a confusão; em metros, o padrão da DHN é 5.",
+    },
+  },
+  {
+    id: "dpc2006-59",
+    tema: "Meteorologia e Oceanografia",
+    enunciado: "Na interpretação de uma carta sinótica de pressão ao nível do mar, a configuração das isóbaras e a simbologia padrão das frentes ressaltam a situação do sistema frontal. Um navegante no oceano Atlântico Sul identifica a ocorrência de uma frente estacionária quando observa a seguinte situação, de acordo com Lobo e Soares, no livro “Meteorologia e Oceanografia”:",
+    alternativas: {
+      A: "As simbologias de frentes fria e quente, triângulos azuis e semicírculos vermelhos, respectivamente, se alternam no mesmo lado da frente, acompanhando a concavidade da frente.",
+      B: "As isóbaras indicam acentuado enfraquecimento do vento quente.",
+      C: "A circulação do ar quente e frio indica ventos perpendiculares à frente.",
+      D: "As isóbaras próximas à frente indicam que os ventos circulam no sentido oposto à trajetória da frente.",
+      E: "Os ventos são paralelos à frente, em ambos os lados, porém de direções opostas.",
+    },
+    correta: "E",
+    explicacoes: {
+      A: "Triângulos e semicírculos alternados do MESMO lado representam frente oclusa. Na frente estacionária eles se alternam em lados OPOSTOS da linha.",
+      B: "Enfraquecimento do vento no ar quente não é critério de identificação de frente estacionária.",
+      C: "Ventos perpendiculares à frente a empurrariam; a frente estaria em movimento (fria ou quente), não estacionária.",
+      D: "Uma frente estacionária não tem trajetória; e o critério não é esse.",
+      E: "A frente é estacionária justamente porque nenhuma massa de ar avança sobre a outra: o vento sopra paralelo à frente nos dois lados, em sentidos opostos.",
+    },
+  },
+  {
+    id: "dpc2006-60",
+    tema: "COLREG / RIPEAM",
+    enunciado: "The International Regulations for Preventing Collisions at Sea, 1972 – COLREG states that certain factors are to be taken into account when determining safe speed. One of the factors is the __________.",
+    alternativas: {
+      A: "radio communications that are available",
+      B: "maximum speed of your vessel",
+      C: "temperature",
+      D: "current",
+      E: "buoys distances",
+    },
+    correta: "D",
+    explicacoes: {
+      A: "Disponibilidade de radiocomunicações não consta dos fatores da Regra 6.",
+      B: "A Regra 6 cita a manobrabilidade (distância de parada e capacidade de giro), não a velocidade máxima.",
+      C: "Temperatura não é fator listado na Regra 6.",
+      D: "Regra 6(a)(v): o estado do vento, do mar e da CORRENTE, e a proximidade de perigos à navegação, são fatores para determinar a velocidade de segurança.",
+      E: "Distância entre boias não é fator listado na Regra 6.",
+    },
+  },
+  {
+    id: "dpc2006-61",
+    tema: "COLREG / RIPEAM",
+    enunciado: "Pilot Ferreira, on board of the tanker “MARIA”, working at night, underway in Amazon River, looks at a target that seems to be another vessel underway. He can distinguish the sidelights and masthead light, as well as a high-intensity all-round flashing red light. Checking the COLREG/72, he concluded that:",
+    alternativas: {
+      A: "It was a sail vessel underway.",
+      B: "It was an air-cushion vessel underway when operating in the non-displacement mode.",
+      C: "It was a power-driven vessel underway, engaged in a rescue operation.",
+      D: "It was a wing-in-ground craft underway taking off, landing or in flight near the surface.",
+      E: "It was a hydrojet-driven vessel underway, with dangerous cargo.",
+    },
+    correta: "D",
+    explicacoes: {
+      A: "Veleiro em movimento exibe luzes de bordos e de alcançado (e, opcionalmente, encarnada sobre verde no tope); não exibe luz de mastro nem lampejos.",
+      B: "A embarcação de colchão de ar em modo sem deslocamento exibe luz circular AMARELA de lampejos, não encarnada.",
+      C: "O COLREG não prevê luz encarnada de lampejos para operação de resgate.",
+      D: "Regra 23(c): a embarcação WIG, somente ao decolar, pousar ou voar junto à superfície, exibe, além das luzes de embarcação de propulsão mecânica, uma luz circular ENCARNADA de lampejos de alta intensidade.",
+      E: "Não existe no COLREG sinalização específica para embarcação a hidrojato com carga perigosa.",
+    },
+  },
+  {
+    id: "dpc2006-62",
+    tema: "COLREG / RIPEAM",
+    enunciado: "In fog, you hear apparently forward of your beam a fog signal of 2 prolonged blasts in succession every two minutes. This signal indicates a __________, according to COLREG.",
+    alternativas: {
+      A: "power-driven vessel making way through the water",
+      B: "vessel being pushed ahead",
+      C: "vessel restricted in her ability to maneuver",
+      D: "power-driven vessel underway but stopped and making no way through the water",
+      E: "vessel engaged in fishing",
+    },
+    correta: "D",
+    explicacoes: {
+      A: "Embarcação de propulsão mecânica COM seguimento emite UM apito longo a cada dois minutos (Regra 35(a)).",
+      B: "Embarcação empurrando ou rebocando emite um apito longo seguido de dois curtos (Regra 35(c)).",
+      C: "Embarcação com capacidade de manobra restrita emite um longo seguido de dois curtos (Regra 35(c)).",
+      D: "Regra 35(b): embarcação de propulsão mecânica em movimento, mas parada e sem seguimento, emite DOIS apitos longos sucessivos, a intervalos não superiores a dois minutos.",
+      E: "Embarcação engajada na pesca emite um longo seguido de dois curtos (Regra 35(c)).",
+    },
+  },
+  {
+    id: "dpc2006-63",
+    tema: "COLREG / RIPEAM",
+    enunciado: "According to COLREG, a vessel showing a yellow light over a white light at night is a vessel __________.",
+    alternativas: {
+      A: "engaged in piloting",
+      B: "towing astern",
+      C: "engaged in fishing",
+      D: "in distress",
+      E: "dredging in a stationary position.",
+    },
+    correta: "B",
+    explicacoes: {
+      A: "Embarcação em serviço de praticagem exibe luz BRANCA sobre ENCARNADA no tope.",
+      B: "Regra 24: quem reboca pela popa exibe a luz de reboque AMARELA acima da luz de alcançado BRANCA. Visto de ré, o rebocador mostra amarela sobre branca.",
+      C: "Pesca: encarnada sobre branca (ou verde sobre branca, no arrasto).",
+      D: "Não há sinal de socorro formado por luz amarela sobre branca.",
+      E: "Draga parada exibe as luzes de manobra restrita (encarnada-branca-encarnada) e as de bordo obstruído/livre.",
+    },
+  },
+  {
+    id: "dpc2006-64",
+    tema: "Meteorologia e Oceanografia",
+    revisar: true,
+    enunciado: "Durante a observação dos elementos meteorológicos, à superfície do mar e do continente, na ocorrência de brisa marítima, o navegante constata o seguinte, de acordo com Lobo e Soares, no livro “Meteorologia e Oceanografia”:",
+    alternativas: {
+      A: "No oceano, pressão do ar em elevação, temperaturas do mar e do ar em declínio.",
+      B: "No mar, temperatura da água constante, circulação do ar divergente, movimento vertical do ar descendente e pressão do ar constante.",
+      C: "No oceano, gradiente horizontal de pressão desencadeando circulação de ar ascendente.",
+      D: "No continente, circulação horizontal do ar divergente com movimento descendente do ar.",
+      E: "Temperatura do ar em elevação no continente, pressão de ar constante no mar e temperatura da superfície do mar em declínio.",
+    },
+    correta: "B",
+    explicacoes: {
+      A: "A temperatura do mar praticamente não varia ao longo do dia (grande capacidade térmica); não está em declínio.",
+      B: "Na brisa marítima é o continente que muda (aquece, a pressão cai, o ar sobe). O mar é o lado estável: temperatura da água e pressão praticamente constantes, com ar descendente e divergência em superfície, alimentando o fluxo para terra.",
+      C: "Sobre o oceano, na brisa marítima, o movimento vertical é DESCENDENTE; a ascensão ocorre sobre o continente aquecido.",
+      D: "Sobre o continente ocorre o inverso: convergência em superfície e movimento ASCENDENTE.",
+      E: "As duas primeiras partes procedem, mas a temperatura da superfície do mar não entra em declínio — permanece praticamente constante.",
+    },
+  },
+  {
+    id: "dpc2006-65",
+    tema: "Manobra do Navio",
+    revisar: true,
+    enunciado: "Alguns Comandantes não gostam de fundear com dois ferros, embora isto seja útil quando se deseja limitar o giro do navio em um fundeadouro pequeno. A razão se deve, principalmente, aos problemas para evitar enrascar as amarras, em casos onde a intensidade e a direção da corrente e do vento são variáveis. Qual das alternativas abaixo NÃO constitui uma ação efetiva e confiável a ser tomada, quando o navio já estiver amarrado a dois ferros, em presença de vento e corrente, de acordo com Daniel H. MacElrevey, em “Shiphandling for the Mariner”?",
+    alternativas: {
+      A: "Alterar a proa do navio, carregando todo o leme, movendo-o na direção desejada. Colocar a corrente ou o vento no bordo apropriado, de forma que auxilie o navio a girar no sentido horário nas sucessivas marés ou mudanças de vento.",
+      B: "Alterar a proa do navio, carregando todo o leme, movendo-o na direção desejada, colocando a corrente ou o vento no bordo apropriado, de forma que auxilie o navio a girar no sentido anti-horário nas sucessivas marés ou mudanças de vento.",
+      C: "Alterar a proa do navio, carregando todo o leme e dando “palhetadas” com máquina a ré, caso necessário. Colocar a corrente ou o vento no bordo apropriado, de forma que auxilie o navio a girar, alternadamente, nos sentidos horário e anti-horário nas sucessivas marés ou mudanças de vento.",
+      D: "Usar um rebocador para empurrar na alheta ou com cabo passado na popa, movendo o navio para a direção desejada, colocando a corrente ou o vento no bordo apropriado, de forma que auxilie o navio a girar no sentido horário nas sucessivas marés ou mudanças de vento.",
+      E: "Usar um rebocador para empurrar na alheta ou com cabo passado na popa, movendo o navio na direção desejada, colocando a corrente ou o vento no bordo apropriado, de forma que auxilie o navio a girar no sentido anti-horário nas sucessivas marés ou mudanças de vento.",
+    },
+    correta: "C",
+    explicacoes: {
+      A: "Pelo gabarito oficial, é ação descrita pelo autor: dar uma guinada com o leme para pôr a corrente/vento no bordo que leve o navio a girar no sentido desejado. Não é a resposta.",
+      B: "Mesmo procedimento da alternativa A, para o outro sentido de giro; ação aceita pelo gabarito. Não é a resposta.",
+      C: "É a alternativa apontada pelo gabarito oficial como NÃO efetiva e confiável. É a única que difere das demais em dois pontos: usa “palhetadas” com máquina A RÉ (as demais usam leme com máquina adiante ou rebocador) e fala em giro “alternadamente” nos dois sentidos. Não consegui confirmar no livro qual dos dois pontos o autor condena — vale conferir o capítulo sobre amarrar a dois ferros.",
+      D: "Pelo gabarito oficial, é ação descrita pelo autor: usar rebocador na alheta/popa para posicionar o navio e controlar o sentido do giro. Não é a resposta.",
+      E: "Mesmo procedimento da alternativa D, para o outro sentido de giro. Não é a resposta.",
+    },
+  },
+  {
+    id: "dpc2006-66",
+    tema: "GMDSS e Comunicações",
+    enunciado: "Which statement concerning reserve sources of energy for GMDSS is FALSE?",
+    alternativas: {
+      A: "While the ship is at sea, there must be available at all times a supply of electrical energy sufficient to operate the radio installations and to charge any batteries used as part of a reserve source of energy.",
+      B: "Both the VHF and MF/HF installations must be simultaneously supplied.",
+      C: "A means of ensuring a continuous supply of electrical power must be provided to all GMDSS equipment that could be affected by an interruption in power.",
+      D: "If a UPS or equivalent is used to supply power to the ship’s GPS receiver or other source of positional information, a means must be provided to ensure the continuous supply of the information in the event of a failure to the ship’s main or emergency source of power.",
+      E: "Information contained in a distress alert includes the name and position of the distressed vessel, and may include additional information such as the nature of the situation and what kind of assistance that may be required.",
+    },
+    correta: "B",
+    explicacoes: {
+      A: "Afirmação verdadeira (SOLAS IV/13): no mar deve haver sempre energia para operar as instalações rádio e carregar as baterias da fonte de reserva. Não é a resposta.",
+      B: "É a FALSA: a fonte de energia de reserva deve alimentar o VHF e, conforme a área marítima, a instalação MF ou MF/HF ou a estação Inmarsat — mas NÃO precisa alimentar simultaneamente instalações independentes de HF e MF.",
+      C: "Afirmação verdadeira: equipamentos sensíveis à interrupção de energia devem ter alimentação contínua assegurada. Não é a resposta.",
+      D: "Afirmação verdadeira: a informação de posição para o GMDSS deve ser mantida mesmo na falha das fontes principal e de emergência. Não é a resposta.",
+      E: "Afirmação verdadeira (embora não trate de energia): descreve o conteúdo de um alerta de socorro. Não é a resposta.",
+    },
+  },
+  {
+    id: "dpc2006-67",
+    tema: "COLREG / RIPEAM",
+    enunciado: "A vessel is considered to be \"restricted in her ability to maneuver\" under COLREG if she is __________.",
+    alternativas: {
+      A: "at anchor",
+      B: "mineclearing",
+      C: "engaged in fishing",
+      D: "engaged in towing",
+      E: "underway in shallow water",
+    },
+    correta: "B",
+    explicacoes: {
+      A: "Embarcação fundeada não está em movimento; tem sinalização própria e não se enquadra na Regra 3(g).",
+      B: "Regra 3(g)(v): embarcação engajada em operações de remoção de minas está entre os casos expressamente listados de capacidade de manobra restrita.",
+      C: "Embarcação engajada na pesca é categoria à parte (Regra 3(d)).",
+      D: "Reboque só caracteriza manobra restrita quando restringe SEVERAMENTE a capacidade de desvio do rumo; reboque comum não.",
+      E: "Navegar em águas rasas pode caracterizar embarcação restrita pelo CALADO (Regra 3(h)), que é outra categoria.",
+    },
+  },
+  {
+    id: "dpc2006-68",
+    tema: "Manobra do Navio",
+    revisar: true,
+    enunciado: `Eram 07:00h da manhã de um lindo dia de primavera quando o Prático embarcou pela escada de quebra-peito, a boreste. No passadiço, lutava contra os raios de sol que vinham diretamente da proa para ler a “Folha de Informações para o Prático”. Não era um navio muito grande: 170 metros de comprimento total, 8,50 metros de calado, hélice de passo controlável direito, um potente motor de 11.000 BHP, 23,40 metros de boca. Da asa de bombordo admirou a vista do outro lado do canal: águas paradas e falta de vento.
+“É o único navio nessa dársena, atracado na posição mais próxima do canal; parece que será fácil tirá-lo daqui, esse giro será rápido”, pensou. Depois que o único rebocador disponível já estava com o cabo passado na proa, operando na condição “push-pull”, e que as providências em relação às espias já haviam sido tomadas, a manobra mais simples a ser executada, a fim de alcançar o canal, de acordo com Daniel H. MacElrevey, será:`,
+    alternativas: {
+      A: "Máquina atrás muito devagar, para abrir o navio do cais, usando o rebocador, quando necessário, para conter a tendência da proa para bombordo até o navio ficar paralelo ao cais. Para executar o giro, manter o navio com máquina atrás e puxar com o rebocador variando a intensidade da força do mesmo, de forma a manter uma razão de guinada segura.",
+      B: "Máquina atrás muito devagar, para abrir o navio do cais, empurrando com o rebocador até o navio ficar paralelo ao cais. Para executar o giro, dar máquinas adiante e puxar com o rebocador variando a intensidade da força do mesmo, de forma a manter uma razão de guinada segura.",
+      C: "Máquina atrás muito devagar, puxando com o rebocador, até o navio ficar paralelo ao cais. Para executar o giro, dar máquinas adiante e puxar com o rebocador variando a intensidade da força do mesmo, de forma a manter uma razão de guinada segura.",
+      D: "Máquina adiante muito devagar, empurrar com o rebocador mantendo a proa próximo ao cais. Após o navio atingir uma pequena inclinação em relação ao cais, dar máquina atrás muito devagar. Para executar o giro, dar máquinas adiante e puxar com o rebocador variando a intensidade da força do mesmo, de forma a manter uma razão de guinada segura.",
+      E: "Máquina atrás muito devagar, empurrar com o rebocador mantendo a proa próximo ao cais. Após o navio atingir uma pequena inclinação em relação ao cais, dar máquina atrás muito devagar. Para executar o giro, dar máquinas adiante e puxar com o rebocador variando a intensidade da força do mesmo, de forma a manter uma razão de guinada segura.",
+    },
+    correta: "A",
+    explicacoes: {
+      A: "O hélice de passo controlável direito gira sempre no mesmo sentido: a ré, comporta-se como um hélice esquerdo, levando a popa para boreste e a proa para bombordo. Isso abre a popa do cais sozinho, e o rebocador na proa só precisa conter a tendência da proa para bombordo. O navio sai de ré e o giro é feito com seguimento a ré, o rebocador puxando a proa: o ponto pivô fica a ré e o braço de alavanca do rebocador é máximo. É a manobra mais simples.",
+      B: "Empurrar a proa contra o cais enquanto a máquina a ré já leva a proa para bombordo é desnecessário, e dar máquinas adiante para o giro anula o seguimento a ré que favorece o braço de alavanca do rebocador.",
+      C: "Puxar com o rebocador desde o início não é necessário (a máquina a ré já abre a popa), e o giro com máquinas adiante desloca o ponto pivô para vante, reduzindo o efeito do rebocador na proa.",
+      D: "Máquina adiante com o navio de proa para dentro da dársena leva o navio na direção errada; a sequência adiante/atrás/adiante é mais complexa que a necessária.",
+      E: "Manter a proa presa ao cais e depois inverter para máquinas adiante no giro complica a manobra, em vez de aproveitar o efeito natural do hélice CPP a ré.",
+    },
+  },
+  {
+    id: "dpc2006-69",
+    tema: "COLREG / RIPEAM",
+    enunciado: "According to COLREG, while underway in a fog you hear a signal of three strokes of a bell, a rapid ringing of the bell, and three more strokes of the bell. This signal is made by a vessel __________.",
+    alternativas: {
+      A: "at anchor and giving warning",
+      B: "aground",
+      C: "at anchor and greater than 100 meters in length",
+      D: "not under command and at anchor",
+      E: "being towed (manned)",
+    },
+    correta: "B",
+    explicacoes: {
+      A: "Fundeada que deseja alertar outra embarcação pode soar um apito curto, um longo e um curto, além do toque rápido de sino — sem as três badaladas.",
+      B: "Regra 35(i): a embarcação ENCALHADA dá o sinal de fundeada (toque rápido de sino por 5 segundos) precedido e seguido de três badaladas distintas.",
+      C: "Fundeada com 100 m ou mais: sino a vante e, em seguida, gongo a ré — sem as três badaladas.",
+      D: "Não há sinal combinado para “sem governo e fundeada”; fundeada usa o sinal de fundeio.",
+      E: "Embarcação rebocada e guarnecida emite um apito longo seguido de três curtos.",
+    },
+  },
+  {
+    id: "dpc2006-70",
+    tema: "Código Internacional de Sinais",
+    revisar: true,
+    enunciado: "O navio “JOSEFINA”, na ZP-01, já com o prático a bordo, navegando nas proximidades do município de Mazagão, colidiu com um tronco de árvore submerso. Qual a mensagem a ser transmitida, de acordo com o Código Internacional de Sinais (CIS), quando questionado pela Autoridade Marítima por meio da abreviatura HV?",
+    alternativas: {
+      A: "HW 1",
+      B: "HW 2",
+      C: "HW 3",
+      D: "HW 4",
+      E: "HW 5",
+    },
+    correta: "D",
+    explicacoes: {
+      A: "HW 1 — “Colidi com navio-farol (barca-farol)”. Não é o caso.",
+      B: "HW 2 — “Colidi com submarino”. Não é o caso.",
+      C: "HW 3 — “Colidi com embarcação desconhecida”. Não é o caso.",
+      D: "HV pergunta “Você colidiu?”. A resposta é da família HW (“Colidi com...”), e o complemento 4 significa “objeto SUBMERSO” — exatamente o tronco de árvore submerso.",
+      E: "HW 5 — “Colidi com boia de navegação”. Não é o caso.",
+    },
+  },
+);
