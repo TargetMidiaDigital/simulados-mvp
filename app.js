@@ -1,12 +1,11 @@
 const app = document.getElementById("app");
-const barra = document.getElementById("barra");
 
 // Letras das alternativas da questão (A–D, A–E...), na ordem do banco
 const letras = (q) => Object.keys(q.alternativas);
 
 // Estado do simulado em andamento e escolhas da tela de configuração
 let estado = null;
-const config = { temas: [], qtd: 10, modo: "porPergunta" };
+const config = { qtd: 10, modo: "porPergunta" };
 
 // ---------- Utilitários de DOM ----------
 
@@ -32,11 +31,12 @@ function mostrar(...nodes) {
   app.replaceChildren(...nodes.flat().filter((n) => n != null && n !== false));
 }
 
-// Tela atual: guardada para poder redesenhar quando uma preferência muda
+// Tela atual: guardada para poder redesenhar após uma interação
 let telaAtual = null;
 
 function abrir(tela) {
   telaAtual = tela;
+  document.body.classList.toggle("largo", tela === telaQuestao);
   tela();
   window.scrollTo(0, 0);
 }
@@ -59,90 +59,19 @@ function formatarTempo(ms) {
   return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 }
 
-// ---------- Preferências de leitura ----------
-
-const prefs = { bionica: false, foco: false, destaque: true, fonte: 100 };
-try {
-  Object.assign(prefs, JSON.parse(localStorage.getItem("simulado.prefs") || "{}"));
-} catch (e) { /* sem armazenamento: usa os padrões */ }
-
-function aplicarPrefs() {
-  document.documentElement.style.setProperty("--escala", prefs.fonte / 100);
-  try {
-    localStorage.setItem("simulado.prefs", JSON.stringify(prefs));
-  } catch (e) { /* ignora */ }
-}
-
-function montarBarra() {
-  const painel = el("div", { class: "painel-leitura", hidden: true });
-
-  const desenharPainel = () => {
-    const chave = (campo, titulo, desc) =>
-      el("label", { class: "chave" },
-        el("input", {
-          type: "checkbox", checked: prefs[campo],
-          onchange: (e) => { prefs[campo] = e.target.checked; aplicarPrefs(); redesenhar(); },
-        }),
-        el("span", {}, titulo, el("small", {}, desc)));
-
-    const mudarFonte = (delta) => {
-      prefs.fonte = Math.max(85, Math.min(140, prefs.fonte + delta));
-      aplicarPrefs();
-      desenharPainel();
-    };
-
-    painel.replaceChildren(
-      chave("bionica", "Leitura biônica", "Negrito no início de cada palavra para guiar o olho."),
-      chave("foco", "Foco por trecho", "Mostra o enunciado um trecho por vez; os demais ficam esmaecidos."),
-      chave("destaque", "Destacar o comando", "Realça a pergunta em si e palavras como NÃO, FALSE, INCORRECT."),
-      el("div", { class: "fonte" },
-        el("span", {}, "Tamanho do texto"),
-        el("div", {},
-          el("button", { onclick: () => mudarFonte(-5), "aria-label": "Diminuir texto" }, "A−"),
-          el("span", { class: "fonte-valor" }, `${prefs.fonte}%`),
-          el("button", { onclick: () => mudarFonte(5), "aria-label": "Aumentar texto" }, "A+"))));
-  };
-  desenharPainel();
-
-  const botao = el("button", {
-    class: "botao-leitura", "aria-expanded": "false",
-    onclick: () => {
-      painel.hidden = !painel.hidden;
-      botao.setAttribute("aria-expanded", String(!painel.hidden));
-    },
-  }, "Aa  Leitura");
-
-  document.addEventListener("click", (e) => {
-    if (!painel.hidden && !painel.contains(e.target) && e.target !== botao) {
-      painel.hidden = true;
-      botao.setAttribute("aria-expanded", "false");
-    }
-  });
-
-  barra.replaceChildren(el("span", { class: "marca" }, "Simulado"), botao, painel);
-}
-
-// ---------- Texto para leitura dinâmica ----------
+// ---------- Texto do enunciado ----------
 
 const RE_ALERTA = /^(não|nao|not|false|falsa|falso|incorrect|incorreta|incorreto|exceto|except)$/i;
 
-// Converte texto em nós aplicando leitura biônica e, no comando da questão,
-// o realce das palavras que invertem o sentido da pergunta.
+// Converte texto em nós; no comando da questão, realça as palavras que
+// invertem o sentido da pergunta (NÃO, FALSE, INCORRECT...).
 function rico(texto, { alerta = false } = {}) {
   const frag = document.createDocumentFragment();
   for (const parte of String(texto).split(/(\s+)/)) {
     if (!parte) continue;
-    const m = parte.match(/^([^\p{L}\d]*)([\p{L}\d]+)(.*)$/su);
-    if (!m) { frag.append(parte); continue; }
-    const [, antes, palavra, depois] = m;
-
-    let conteudo = [parte];
-    if (prefs.bionica && !/^\d/.test(palavra)) {
-      const n = palavra.length <= 3 ? 1 : Math.ceil(palavra.length * 0.4);
-      conteudo = [antes, el("b", { class: "bio" }, palavra.slice(0, n)), palavra.slice(n) + depois];
-    }
-    if (alerta && prefs.destaque && RE_ALERTA.test(palavra)) frag.append(el("mark", {}, conteudo));
-    else frag.append(...conteudo);
+    const palavra = parte.replace(/^[^\p{L}\d]+|[^\p{L}\d]+$/gu, "");
+    if (alerta && RE_ALERTA.test(palavra)) frag.append(el("mark", {}, parte));
+    else frag.append(parte);
   }
   return frag;
 }
@@ -192,37 +121,12 @@ function blocosDoEnunciado(texto) {
   return blocos;
 }
 
-// Trechos do enunciado em tela, para o modo foco
-let trechos = [];
-let contadorFoco = null;
-
-function focar(i) {
-  if (!trechos.length) return;
-  estado.trecho = Math.max(0, Math.min(i, trechos.length - 1));
-  trechos.forEach((n, j) => n.classList.toggle("ativo", j === estado.trecho));
-  if (contadorFoco) contadorFoco.textContent = `Trecho ${estado.trecho + 1} de ${trechos.length}`;
-}
-
-function enunciadoEl(q, comFoco) {
-  const nodes = blocosDoEnunciado(q.enunciado).map((b, i) =>
-    el("div", { class: "trecho " + b.tipo, onclick: comFoco && (() => focar(i)) },
+function enunciadoEl(q) {
+  return el("div", { class: "enunciado leitura" }, blocosDoEnunciado(q.enunciado).map((b) =>
+    el("div", { class: "trecho " + b.tipo },
       b.tipo === "item"
         ? [el("span", { class: "marcador" }, b.marcador), el("span", {}, rico(b.texto))]
-        : rico(b.texto, { alerta: b.tipo === "comando" })));
-
-  const classes = ["enunciado", "leitura"];
-  if (prefs.destaque) classes.push("com-destaque");
-  if (!comFoco || nodes.length < 2) return el("div", { class: classes.join(" ") }, nodes);
-
-  trechos = nodes;
-  contadorFoco = el("span", {});
-  const caixa = el("div", { class: classes.concat("foco").join(" ") },
-    nodes,
-    el("div", { class: "foco-controle" },
-      contadorFoco,
-      el("button", { class: "mini", onclick: () => focar(estado.trecho + 1) }, "Próximo trecho ▸")));
-  focar(estado.trecho || 0);
-  return caixa;
+        : rico(b.texto, { alerta: b.tipo === "comando" }))));
 }
 
 // ---------- Explicações ----------
@@ -271,22 +175,8 @@ function explicacao(q, letra) {
 
 function telaConfig() {
   pararRelogio();
-  const temas = [...new Set(QUESTOES.map((q) => q.tema))].sort((a, b) => a.localeCompare(b, "pt-BR"));
-  const disponiveis = QUESTOES.filter((q) => !config.temas.length || config.temas.includes(q.tema));
-  const total = disponiveis.length;
+  const total = QUESTOES.length;
   const qtd = Math.max(1, Math.min(config.qtd, total));
-
-  const chipTema = (tema) => {
-    const ativo = config.temas.includes(tema);
-    const n = QUESTOES.filter((q) => q.tema === tema).length;
-    return el("button", {
-      class: "chip" + (ativo ? " ativo" : ""), "aria-pressed": String(ativo),
-      onclick: () => {
-        config.temas = ativo ? config.temas.filter((t) => t !== tema) : [...config.temas, tema];
-        redesenhar();
-      },
-    }, tema, el("span", { class: "chip-n" }, n));
-  };
 
   const inputQtd = el("input", {
     type: "number", id: "qtd", min: 1, max: total, value: qtd, inputmode: "numeric",
@@ -308,14 +198,8 @@ function telaConfig() {
 
   mostrar(
     el("h1", {}, "Novo simulado"),
-    el("p", { class: "sub" }, `${QUESTOES.length} questões no banco · ${total} nos temas selecionados`),
+    el("p", { class: "sub" }, `${total} questões disponíveis no banco.`),
     el("div", { class: "card" },
-      el("div", { class: "field" },
-        el("div", { class: "label" }, "Temas"),
-        el("div", { class: "chips" }, temas.map(chipTema)),
-        el("div", { class: "hint" }, config.temas.length
-          ? "Toque de novo em um tema para removê-lo."
-          : "Nenhum tema marcado = todos os temas.")),
       el("div", { class: "field" },
         el("label", { for: "qtd" }, "Número de questões"),
         el("div", { class: "linha-qtd" }, inputQtd, el("div", { class: "chips" }, atalhosQtd)),
@@ -327,7 +211,7 @@ function telaConfig() {
           opcaoModo("final", "Somente no final", "Responda tudo primeiro; o gabarito comentado aparece ao terminar."))),
       el("button", {
         class: "primary grande",
-        onclick: () => iniciar(embaralhar(disponiveis).slice(0, qtd), config.modo),
+        onclick: () => iniciar(embaralhar(QUESTOES).slice(0, qtd), config.modo),
       }, `Iniciar simulado · ${qtd} ${qtd === 1 ? "questão" : "questões"}`)));
 }
 
@@ -338,7 +222,6 @@ function iniciar(questoes, modo) {
     respostas: {},   // id da questão -> letra escolhida
     confirmadas: {}, // id da questão -> true (só no modo porPergunta)
     atual: 0,
-    trecho: 0,       // trecho do enunciado em foco
     inicio: Date.now(),
     fim: null,
     filtro: "todas",
@@ -358,7 +241,6 @@ function pararRelogio() {
 
 function irPara(indice) {
   estado.atual = indice;
-  estado.trecho = 0;
   abrir(telaQuestao);
 }
 
@@ -389,7 +271,6 @@ function telaQuestao() {
   const escolhida = respostas[q.id];
   const revelada = modo === "porPergunta" && confirmadas[q.id];
   const ultima = atual === questoes.length - 1;
-  trechos = [];
 
   const alts = letras(q).map((letra) => {
     let classe = "alt leitura";
@@ -430,22 +311,30 @@ function telaQuestao() {
     if (confirm("Sair do simulado? As respostas serão perdidas.")) abrir(telaConfig);
   };
 
+  const respondidas = questoes.filter((x) => respostas[x.id]).length;
+
+  // Layout em duas colunas: pergunta | painel com tempo e números das questões
   mostrar(
-    el("div", { class: "topbar" },
-      el("span", {}, el("strong", {}, `Questão ${atual + 1}`), ` de ${questoes.length}`),
-      el("span", { class: "tema" }, q.tema || ""),
-      el("span", { class: "topbar-fim" }, tempo, el("button", { class: "mini", onclick: sair }, "Sair"))),
-    navegador(),
-    el("div", { class: "card" },
-      enunciadoEl(q, prefs.foco && !revelada),
-      el("div", { class: "alts" }, alts),
-      revelada && blocoGabarito(q, escolhida),
-      el("div", { class: "actions" }, botoes)),
-    el("p", { class: "atalhos" },
-      "Atalhos: ", el("kbd", {}, "A"), "–", el("kbd", {}, letras(q).slice(-1)[0]), " marca · ",
-      el("kbd", {}, "Enter"), " confirma/avança",
-      modo === "final" && [" · ", el("kbd", {}, "←"), " ", el("kbd", {}, "→"), " navega"],
-      prefs.foco && [" · ", el("kbd", {}, "Espaço"), " próximo trecho"]));
+    el("div", { class: "layout-questao" },
+      el("div", { class: "coluna-pergunta" },
+        el("div", { class: "topbar" },
+          el("span", {}, el("strong", {}, `Questão ${atual + 1}`), ` de ${questoes.length}`),
+          el("span", { class: "tema" }, q.tema || "")),
+        el("div", { class: "card" },
+          enunciadoEl(q),
+          el("div", { class: "alts" }, alts),
+          revelada && blocoGabarito(q, escolhida),
+          el("div", { class: "actions" }, botoes)),
+        el("p", { class: "atalhos" },
+          "Atalhos: ", el("kbd", {}, "A"), "–", el("kbd", {}, letras(q).slice(-1)[0]), " marca · ",
+          el("kbd", {}, "Enter"), " confirma/avança",
+          modo === "final" && [" · ", el("kbd", {}, "←"), " ", el("kbd", {}, "→"), " navega"])),
+      el("aside", { class: "painel-lateral card" },
+        el("div", { class: "painel-tempo" }, el("span", { class: "rotulo" }, "Tempo"), tempo),
+        el("div", { class: "painel-questoes" },
+          el("span", { class: "rotulo" }, `Questões · ${respondidas} de ${questoes.length} respondidas`),
+          navegador()),
+        el("button", { class: "mini sair", onclick: sair }, "Sair do simulado"))));
 }
 
 function finalizar() {
@@ -472,9 +361,6 @@ document.addEventListener("keydown", (e) => {
   } else if (e.key === "Enter" && acaoPrimaria) {
     e.preventDefault();
     acaoPrimaria();
-  } else if (e.key === " " && trechos.length) {
-    e.preventDefault();
-    focar(estado.trecho + 1);
   } else if (e.key === "ArrowRight" && estado.atual < estado.questoes.length - 1 && podeIrPara(estado.atual + 1)) {
     irPara(estado.atual + 1);
   } else if (e.key === "ArrowLeft" && estado.atual > 0) {
@@ -545,7 +431,7 @@ function telaResultado() {
         el("strong", {}, `Questão ${i + 1}`),
         el("span", { class: "tema" }, q.tema || ""),
         el("span", { class: "resumo" }, resumo)),
-      enunciadoEl(q, false),
+      enunciadoEl(q),
       el("div", { class: "alts" }, letras(q).map((letra) => {
         let classe = "alt leitura";
         if (letra === q.correta) classe += " certa";
@@ -590,6 +476,4 @@ function telaResultado() {
     revisao.length ? revisao : el("p", { class: "sub" }, "Nenhuma questão neste filtro."));
 }
 
-aplicarPrefs();
-montarBarra();
 abrir(telaConfig);
