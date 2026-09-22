@@ -1,4 +1,9 @@
 const app = document.getElementById("app");
+const conta = document.getElementById("conta");
+
+// Banco de questões (carregado do Supabase após o login) e usuário logado
+let QUESTOES = [];
+let usuario = null;
 
 // Letras das alternativas da questão (A–D, A–E...), na ordem do banco
 const letras = (q) => Object.keys(q.alternativas);
@@ -26,10 +31,11 @@ function el(tag, attrs = {}, ...filhos) {
   return node;
 }
 
-// Troca o conteúdo da tela; aceita listas e ignora valores falsos
-function mostrar(...nodes) {
-  app.replaceChildren(...nodes.flat().filter((n) => n != null && n !== false));
+// Troca o conteúdo de um elemento; aceita listas aninhadas e ignora valores falsos
+function preencher(alvo, ...nodes) {
+  alvo.replaceChildren(...nodes.flat(Infinity).filter((n) => n != null && n !== false));
 }
+const mostrar = (...nodes) => preencher(app, ...nodes);
 
 // Tela atual: guardada para poder redesenhar após uma interação
 let telaAtual = null;
@@ -57,6 +63,129 @@ function embaralhar(lista) {
 function formatarTempo(ms) {
   const s = Math.floor(ms / 1000);
   return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+}
+
+const formatarData = (iso) =>
+  new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
+
+// ---------- Login e carregamento ----------
+
+function telaMensagem(texto) {
+  mostrar(el("p", { class: "sub centro" }, texto));
+}
+
+function campo(rotulo, attrs) {
+  const input = el("input", { class: "campo", ...attrs });
+  return [el("label", { class: "label", for: attrs.id }, rotulo), input];
+}
+
+function telaLogin(aviso) {
+  pararRelogio();
+  const erro = el("p", { class: "erro", hidden: !aviso }, aviso || "");
+  const [lEmail, email] = campo("E-mail", { type: "email", id: "email", autocomplete: "username", required: true });
+  const [lSenha, senha] = campo("Senha", { type: "password", id: "senha", autocomplete: "current-password", required: true });
+  const botao = el("button", { class: "primary grande", type: "submit" }, "Entrar");
+
+  const falhar = (e) => {
+    erro.textContent = /invalid login/i.test(e.message) ? "E-mail ou senha incorretos." : e.message;
+    erro.hidden = false;
+    botao.disabled = false;
+  };
+
+  const form = el("form", {
+    class: "card form-login",
+    onsubmit: async (e) => {
+      e.preventDefault();
+      botao.disabled = true;
+      try {
+        usuario = await auth.entrar(email.value.trim(), senha.value);
+        await entrarNoApp();
+      } catch (err) { falhar(err); }
+    },
+  },
+    lEmail, email, lSenha, senha, erro, botao,
+    el("button", {
+      type: "button", class: "link",
+      onclick: async () => {
+        if (!email.value.trim()) { falhar(new Error("Informe o e-mail para receber o link de redefinição.")); return; }
+        try {
+          await auth.recuperarSenha(email.value.trim());
+          erro.textContent = "Se o e-mail estiver cadastrado, você receberá um link para definir uma nova senha.";
+          erro.hidden = false;
+        } catch (err) { falhar(err); }
+      },
+    }, "Esqueci minha senha"));
+
+  mostrar(
+    el("h1", {}, "Entrar"),
+    el("p", { class: "sub" }, "O acesso é por convite. Use o e-mail e a senha cadastrados."),
+    form);
+  email.focus();
+}
+
+// Primeiro acesso (convite) ou redefinição: o usuário já está autenticado pelo
+// link do e-mail e precisa escolher uma senha.
+function telaDefinirSenha() {
+  const erro = el("p", { class: "erro", hidden: true });
+  const [lSenha, senha] = campo("Nova senha", { type: "password", id: "nova", autocomplete: "new-password", minlength: 8, required: true });
+  const [lConf, conf] = campo("Repita a senha", { type: "password", id: "conf", autocomplete: "new-password", required: true });
+  const botao = el("button", { class: "primary grande", type: "submit" }, "Salvar senha e continuar");
+
+  mostrar(
+    el("h1", {}, "Defina sua senha"),
+    el("p", { class: "sub" }, `Conta: ${usuario.email}. Escolha uma senha com pelo menos 8 caracteres.`),
+    el("form", {
+      class: "card form-login",
+      onsubmit: async (e) => {
+        e.preventDefault();
+        if (senha.value !== conf.value) { erro.textContent = "As senhas não conferem."; erro.hidden = false; return; }
+        botao.disabled = true;
+        try {
+          await auth.definirSenha(senha.value);
+          await entrarNoApp();
+        } catch (err) { erro.textContent = err.message; erro.hidden = false; botao.disabled = false; }
+      },
+    }, lSenha, senha, lConf, conf, erro, botao));
+  senha.focus();
+}
+
+function montarConta() {
+  preencher(conta, usuario && [
+    el("span", { class: "email" }, usuario.email),
+    el("button", { class: "mini", onclick: async () => { await auth.sair(); usuario = null; QUESTOES = []; montarConta(); abrir(telaLogin); } }, "Sair"),
+  ]);
+}
+
+// Com o usuário autenticado: carrega as questões e abre a tela inicial
+async function entrarNoApp() {
+  montarConta();
+  telaMensagem("Carregando questões…");
+  try {
+    QUESTOES = await carregarQuestoes();
+  } catch (e) {
+    telaMensagem(`Não foi possível carregar as questões: ${e.message}`);
+    return;
+  }
+  abrir(telaConfig);
+}
+
+async function iniciarApp() {
+  // O link de convite/redefinição chega com "type=invite|recovery" no hash;
+  // guardamos antes que a biblioteca o consuma ao criar a sessão.
+  const viaLink = /type=(invite|recovery|magiclink)/.test(location.hash);
+  telaMensagem("Carregando…");
+
+  const sessao = await new Promise((resolve) => {
+    let feito = false;
+    const concluir = (s) => { if (!feito) { feito = true; resolve(s); } };
+    auth.aoMudar((evento, s) => { if (evento === "SIGNED_IN" || evento === "PASSWORD_RECOVERY" || evento === "INITIAL_SESSION") concluir(s); });
+    setTimeout(async () => concluir(await auth.sessao().catch(() => null)), viaLink ? 4000 : 1500);
+  });
+
+  usuario = sessao ? sessao.user : null;
+  if (!usuario) { abrir(telaLogin); return; }
+  if (viaLink) { montarConta(); abrir(telaDefinirSenha); return; }
+  await entrarNoApp();
 }
 
 // ---------- Texto do enunciado ----------
@@ -212,7 +341,38 @@ function telaConfig() {
       el("button", {
         class: "primary grande",
         onclick: () => iniciar(embaralhar(QUESTOES).slice(0, qtd), config.modo),
-      }, `Iniciar simulado · ${qtd} ${qtd === 1 ? "questão" : "questões"}`)));
+      }, `Iniciar simulado · ${qtd} ${qtd === 1 ? "questão" : "questões"}`)),
+    blocoHistorico());
+}
+
+// Histórico e desempenho acumulado do usuário; carrega em segundo plano
+function blocoHistorico() {
+  const caixa = el("div", { class: "card historico" }, el("h2", {}, "Seu histórico"), el("p", { class: "sub" }, "Carregando…"));
+  Promise.all([carregarHistorico(), carregarDesempenho()]).then(([simulados, desempenho]) => {
+    if (telaAtual !== telaConfig) return;
+    const porTema = desempenho
+      .map((t) => ({ ...t, pct: Math.round((t.acertos / t.respondidas) * 100) }))
+      .sort((a, b) => a.pct - b.pct);
+    preencher(caixa,
+      el("h2", {}, "Seu histórico"),
+      !simulados.length
+        ? el("p", { class: "sub" }, "Você ainda não concluiu nenhum simulado. Os resultados ficam salvos aqui.")
+        : [
+          el("div", { class: "lista-simulados" }, simulados.map((s) => el("div", { class: "simulado-linha" },
+            el("span", { class: "quando" }, formatarData(s.iniciado_em)),
+            el("span", { class: "detalhe" }, `${s.total} questões · ${s.modo === "final" ? "gabarito no final" : "gabarito por pergunta"} · ${formatarTempo(s.tempo_ms)}`),
+            el("strong", { class: "pct " + (s.acertos / s.total >= 0.7 ? "ok" : "err") }, `${Math.round((s.acertos / s.total) * 100)}%`),
+            el("span", { class: "detalhe" }, `${s.acertos}/${s.total}`)))),
+          porTema.length > 0 && el("h3", {}, "Acertos por tema (acumulado)"),
+          porTema.map((t) => el("div", { class: "tema-linha" },
+            el("span", { class: "tema-nome" }, t.tema),
+            el("div", { class: "tema-barra" }, el("div", { style: `width:${t.pct}%` })),
+            el("span", { class: "tema-pct" }, `${t.acertos}/${t.respondidas}`))),
+        ]);
+  }).catch((e) => {
+    preencher(caixa, el("h2", {}, "Seu histórico"), el("p", { class: "erro" }, `Não foi possível carregar o histórico: ${e.message}`));
+  });
+  return caixa;
 }
 
 function iniciar(questoes, modo) {
@@ -225,6 +385,7 @@ function iniciar(questoes, modo) {
     inicio: Date.now(),
     fim: null,
     filtro: "todas",
+    salvo: null, // null = ainda não gravado; "ok" | mensagem de erro
   };
   abrir(telaQuestao);
 }
@@ -405,9 +566,20 @@ function blocoGabarito(q, escolhida) {
 
 // ---------- Tela 3: resultado + gabarito completo ----------
 
+// Grava o simulado no banco uma única vez e atualiza o aviso na tela
+function gravarResultado() {
+  const este = estado;
+  este.salvo = "salvando";
+  salvarSimulado(este, usuario.id)
+    .then(() => { este.salvo = "ok"; })
+    .catch((e) => { este.salvo = e.message; })
+    .finally(() => { if (estado === este && telaAtual === telaResultado) redesenhar(); });
+}
+
 function telaResultado() {
   pararRelogio();
   if (!estado.fim) estado.fim = Date.now();
+  if (estado.salvo === null) gravarResultado();
   const { questoes, respostas } = estado;
 
   const situacao = (q) => (!respostas[q.id] ? "branco" : respostas[q.id] === q.correta ? "certa" : "errada");
@@ -466,6 +638,10 @@ function telaResultado() {
         numero(brancos, "em branco"),
         numero(formatarTempo(duracao), "tempo total"),
         numero(formatarTempo(duracao / questoes.length), "por questão")),
+      el("p", { class: "salvo " + (estado.salvo === "ok" ? "ok" : estado.salvo === "salvando" ? "" : "err") },
+        estado.salvo === "ok" ? "Resultado salvo no seu histórico."
+          : estado.salvo === "salvando" ? "Salvando resultado…"
+          : [`Não foi possível salvar: ${estado.salvo}. `, el("button", { class: "link", onclick: () => { gravarResultado(); redesenhar(); } }, "Tentar de novo")]),
       el("div", { class: "actions centro" },
         paraRefazer.length > 0 && el("button", {
           onclick: () => iniciar(embaralhar(paraRefazer), estado.modo),
@@ -487,4 +663,4 @@ function telaResultado() {
     revisao.length ? revisao : el("p", { class: "sub" }, "Nenhuma questão neste filtro."));
 }
 
-abrir(telaConfig);
+iniciarApp();

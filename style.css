@@ -50,6 +50,9 @@ body {
 /* ---------- Barra superior ---------- */
 
 #barra {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -59,6 +62,8 @@ body {
   border-bottom: 1px solid var(--border);
 }
 .marca { font-weight: 800; letter-spacing: -0.01em; }
+.conta { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--muted); }
+.conta .email { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 50vw; }
 
 /* ---------- Base ---------- */
 
@@ -416,4 +421,57 @@ mark {
   .card { padding: 18px; }
   .revisao { padding: 0; }
   .tema-linha { grid-template-columns: minmax(0, 7rem) 1fr 3rem; }
+}
+
+/* ---------- Login e histórico ---------- */
+
+.centro { text-align: center; }
+.form-login { max-width: 420px; display: grid; gap: 6px; }
+.form-login .label { font-weight: 700; margin-top: 10px; }
+.campo {
+  width: 100%;
+  padding: 11px 12px;
+  font: inherit;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--text);
+}
+.form-login .grande { margin-top: 14px; }
+.erro { color: var(--err); font-size: 0.9rem; margin: 8px 0 0; }
+.erro[hidden] { display: none; }
+button.link {
+  background: none;
+  border: none;
+  padding: 6px 0;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  justify-self: start;
+}
+.salvo { font-size: 0.85rem; color: var(--muted); margin: 12px 0 0; }
+.salvo.ok { color: var(--ok); }
+.salvo.err { color: var(--err); }
+.salvo .link { padding: 0; font-size: inherit; }
+
+.historico h3 { font-size: 0.95rem; margin: 18px 0 10px; }
+.lista-simulados { display: grid; gap: 6px; }
+.simulado-linha {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+.simulado-linha .quando { font-variant-numeric: tabular-nums; }
+.simulado-linha .detalhe { color: var(--muted); font-size: 0.82rem; }
+.simulado-linha .pct { font-size: 1.05rem; }
+.pct.ok { color: var(--ok); }
+.pct.err { color: var(--err); }
+@media (max-width: 520px) {
+  .simulado-linha { grid-template-columns: auto 1fr auto; }
+  .simulado-linha .detalhe:first-of-type { grid-column: 1 / -1; }
 }

@@ -7,20 +7,13 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header id="barra"><span class="marca">Simulado</span></header>
+  <header id="barra"><span class="marca">Simulado</span><span id="conta" class="conta"></span></header>
   <main id="app"></main>
-  <script src="questoes.js"></script>
-  <script src="questoes/dpc-2006-parte1.js"></script>
-  <script src="questoes/dpc-2006-parte2.js"></script>
-  <script src="questoes/dpc-2006-parte3.js"></script>
-  <script src="questoes/dpc-2008-parte1.js"></script>
-  <script src="questoes/dpc-2008-parte2.js"></script>
-  <script src="questoes/dpc-2008-parte3.js"></script>
-  <script src="questoes/dpc-2011-parte1.js"></script>
-  <script src="questoes/dpc-2011-parte2.js"></script>
-  <script src="questoes/dpc-2011-parte3.js"></script>
-  <script src="questoes/dpc-2012-parte1.js"></script>
-  <script src="questoes/dpc-2012-parte2.js"></script>
+  <!-- As questões vêm do banco (Supabase); os arquivos em questoes/ são a fonte
+       usada para carregar o banco e ficam no repositório como referência. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="config.js"></script>
+  <script src="dados.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
