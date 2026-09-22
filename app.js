@@ -10,7 +10,7 @@ const letras = (q) => Object.keys(q.alternativas);
 
 // Estado do simulado em andamento e escolhas da tela de configuração
 let estado = null;
-const config = { qtd: 10, modo: "porPergunta" };
+const config = { prova: "Mista", qtd: 10, modo: "porPergunta" };
 
 // ---------- Utilitários de DOM ----------
 
@@ -61,7 +61,7 @@ function embaralhar(lista) {
 }
 
 function formatarTempo(ms) {
-  const s = Math.floor(ms / 1000);
+  const s = Math.max(0, Math.floor(ms / 1000));
   return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 }
 
@@ -166,7 +166,7 @@ async function entrarNoApp() {
     telaMensagem(`Não foi possível carregar as questões: ${e.message}`);
     return;
   }
-  abrir(telaConfig);
+  abrir(telaPainel);
 }
 
 async function iniciarApp() {
@@ -300,35 +300,154 @@ function explicacao(q, letra) {
   return "";
 }
 
-// ---------- Tela 1: configuração ----------
+// ---------- Tela 1: painel ----------
 
-function telaConfig() {
+const MISTA = "Mista";
+const nomeProva = (p) => (p === MISTA ? "Mista (todas as provas)" : p);
+const provasDisponiveis = () => [...new Set(QUESTOES.map((q) => q.prova))].sort();
+
+function telaPainel() {
   pararRelogio();
-  const total = QUESTOES.length;
+  const corpo = el("div", {}, el("p", { class: "sub" }, "Carregando histórico…"));
+  mostrar(
+    el("div", { class: "cabecalho-painel" },
+      el("h1", {}, "Simulados"),
+      el("button", { class: "primary", onclick: () => abrir(telaNovo) }, "Novo simulado")),
+    corpo);
+
+  carregarHistorico().then((lista) => {
+    if (telaAtual !== telaPainel) return;
+    preencher(corpo, painelConteudo(lista));
+  }).catch((e) => preencher(corpo, el("p", { class: "erro" }, `Não foi possível carregar o histórico: ${e.message}`)));
+}
+
+function painelConteudo(lista) {
+  const concluidos = lista.filter((s) => s.finalizado_em);
+  const ultimo = concluidos[0];
+  const pct = (s) => Math.round((s.acertos / s.total) * 100);
+  const corNota = (p) => (p >= 70 ? "ok" : p >= 50 ? "meio" : "err");
+
+  const cartao = (titulo, ...conteudo) => el("div", { class: "card stat" }, el("span", { class: "rotulo" }, titulo), conteudo);
+
+  const resumo = el("div", { class: "painel-topo" },
+    el("div", { class: "painel-stats" },
+      cartao("Simulados realizados", el("strong", { class: "stat-num" }, concluidos.length)),
+      cartao("Último simulado",
+        ultimo && el("div", { class: "contagem" },
+          el("span", { class: "ok" }, `${ultimo.acertos} acertos`),
+          el("span", { class: "info" }, `${ultimo.brancos} brancos`),
+          el("span", { class: "err" }, `${ultimo.erros} erros`)),
+        el("strong", { class: "stat-num" }, ultimo ? `${pct(ultimo)}%` : "—"))),
+    el("div", { class: "card grafico-card" },
+      el("span", { class: "rotulo" }, "Seu desempenho"),
+      concluidos.length >= 2
+        ? grafico(concluidos.slice(0, 12).reverse().map(pct))
+        : el("p", { class: "sub" }, "Conclua ao menos dois simulados para ver a evolução.")));
+
+  const linha = (s) => {
+    const feito = !!s.finalizado_em;
+    const nota = feito ? pct(s) : null;
+    return el("div", { class: "card linha-simulado" + (feito ? "" : " andamento") },
+      el("span", { class: "quando" }, formatarData(s.iniciado_em)),
+      el("div", { class: "nome" },
+        el("strong", {}, nomeProva(s.prova)),
+        el("span", { class: "detalhe" },
+          `${s.modo === "final" ? "Gabarito no final" : "Gabarito por pergunta"} · ${s.total} questões`,
+          !feito && el("span", { class: "badge-andamento" }, "Em andamento"))),
+      el("span", { class: "detalhe tempo-linha" }, feito ? formatarTempo(s.tempo_ms) : "—"),
+      feito
+        ? el("span", { class: "contagem" },
+            el("span", { class: "ok" }, s.acertos), el("span", { class: "info" }, s.brancos), el("span", { class: "err" }, s.erros))
+        : el("span", { class: "contagem" }, el("span", { class: "detalhe" }, "sem resultado")),
+      feito ? el("span", { class: "nota " + corNota(nota) }, nota) : el("span"),
+      el("div", { class: "acoes" },
+        el("button", { class: "mini", onclick: () => abrirSimulado(s) }, feito ? "Ver" : "Continuar"),
+        el("button", {
+          class: "mini apagar", "aria-label": "Apagar simulado",
+          onclick: async () => {
+            if (!confirm("Apagar este simulado do histórico?")) return;
+            try { await apagarSimulado(s.id); abrir(telaPainel); }
+            catch (e) { alert(`Não foi possível apagar: ${e.message}`); }
+          },
+        }, "🗑")));
+  };
+
+  return [
+    resumo,
+    lista.length
+      ? el("div", { class: "lista" }, lista.map(linha))
+      : el("div", { class: "card vazio" },
+          el("p", {}, "Você ainda não fez nenhum simulado."),
+          el("button", { class: "primary", onclick: () => abrir(telaNovo) }, "Criar o primeiro")),
+  ];
+}
+
+// Linha de evolução das notas (%), em SVG puro
+function grafico(valores) {
+  const W = 600, H = 150, px = 28, py = 22;
+  const x = (i) => px + (valores.length === 1 ? (W - 2 * px) / 2 : (i * (W - 2 * px)) / (valores.length - 1));
+  const y = (v) => py + (H - 2 * py) * (1 - v / 100);
+  const svg = (tag, attrs, ...filhos) => {
+    const n = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+    n.append(...filhos);
+    return n;
+  };
+  const pontos = valores.map((v, i) => `${x(i)},${y(v)}`).join(" ");
+  return svg("svg", { class: "grafico", viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: "none" },
+    ...[0, 25, 50, 75, 100].map((v) => svg("line", { class: "grade", x1: px, x2: W - px, y1: y(v), y2: y(v) })),
+    svg("polyline", { class: "linha", points: pontos }),
+    ...valores.flatMap((v, i) => [
+      svg("circle", { class: "ponto-g", cx: x(i), cy: y(v), r: 4 }),
+      svg("text", { class: "valor", x: x(i), y: y(v) - 9, "text-anchor": "middle" }, `${v}%`),
+    ]));
+}
+
+// ---------- Tela 1b: novo simulado ----------
+
+function telaNovo() {
+  pararRelogio();
+  const provas = provasDisponiveis();
+  if (!provas.includes(config.prova) && config.prova !== MISTA) config.prova = MISTA;
+  const disponiveis = config.prova === MISTA ? QUESTOES : QUESTOES.filter((q) => q.prova === config.prova);
+  const total = disponiveis.length;
   const qtd = Math.max(1, Math.min(config.qtd, total));
+
+  const chip = (ativo, rotulo, onclick, extra) =>
+    el("button", { class: "chip" + (ativo ? " ativo" : ""), onclick }, rotulo, extra && el("span", { class: "chip-n" }, extra));
 
   const inputQtd = el("input", {
     type: "number", id: "qtd", min: 1, max: total, value: qtd, inputmode: "numeric",
     onchange: (e) => { config.qtd = parseInt(e.target.value, 10) || 1; redesenhar(); },
   });
   const atalhosQtd = [...new Set([10, 20, 40, total])].filter((n) => n <= total).map((n) =>
-    el("button", {
-      class: "chip" + (n === qtd ? " ativo" : ""),
-      onclick: () => { config.qtd = n; redesenhar(); },
-    }, n === total ? `Todas (${total})` : n));
+    chip(n === qtd, n === total ? `Todas (${total})` : n, () => { config.qtd = n; redesenhar(); }));
 
   const opcaoModo = (valor, titulo, desc) =>
     el("label", { class: "radio-opt" },
-      el("input", {
-        type: "radio", name: "modo", value: valor, checked: config.modo === valor,
-        onchange: () => { config.modo = valor; },
-      }),
+      el("input", { type: "radio", name: "modo", value: valor, checked: config.modo === valor, onchange: () => { config.modo = valor; } }),
       el("span", {}, titulo, el("small", {}, desc)));
 
+  const botao = el("button", {
+    class: "primary grande",
+    onclick: async () => {
+      botao.disabled = true;
+      try { await iniciar(embaralhar(disponiveis).slice(0, qtd), config.modo, config.prova); }
+      catch (e) { alert(`Não foi possível criar o simulado: ${e.message}`); botao.disabled = false; }
+    },
+  }, `Iniciar simulado · ${qtd} ${qtd === 1 ? "questão" : "questões"}`);
+
   mostrar(
+    el("button", { class: "link voltar", onclick: () => abrir(telaPainel) }, "← Voltar ao painel"),
     el("h1", {}, "Novo simulado"),
-    el("p", { class: "sub" }, `${total} questões disponíveis no banco.`),
+    el("p", { class: "sub" }, `${QUESTOES.length} questões no banco, de ${provas.length} provas.`),
     el("div", { class: "card" },
+      el("div", { class: "field" },
+        el("div", { class: "label" }, "Prova"),
+        el("div", { class: "chips" },
+          chip(config.prova === MISTA, "Mista", () => { config.prova = MISTA; redesenhar(); }, QUESTOES.length),
+          provas.map((p) => chip(config.prova === p, p, () => { config.prova = p; redesenhar(); }, QUESTOES.filter((q) => q.prova === p).length))),
+        el("div", { class: "hint" }, config.prova === MISTA ? "Sorteia questões de todas as provas." : `Só questões da ${config.prova}.`)),
       el("div", { class: "field" },
         el("label", { for: "qtd" }, "Número de questões"),
         el("div", { class: "linha-qtd" }, inputQtd, el("div", { class: "chips" }, atalhosQtd)),
@@ -338,56 +457,62 @@ function telaConfig() {
         el("div", { class: "radio-group" },
           opcaoModo("porPergunta", "A cada pergunta", "Mostra a resposta e as explicações logo após você responder."),
           opcaoModo("final", "Somente no final", "Responda tudo primeiro; o gabarito comentado aparece ao terminar."))),
-      el("button", {
-        class: "primary grande",
-        onclick: () => iniciar(embaralhar(QUESTOES).slice(0, qtd), config.modo),
-      }, `Iniciar simulado · ${qtd} ${qtd === 1 ? "questão" : "questões"}`)),
-    blocoHistorico());
+      botao));
 }
 
-// Histórico e desempenho acumulado do usuário; carrega em segundo plano
-function blocoHistorico() {
-  const caixa = el("div", { class: "card historico" }, el("h2", {}, "Seu histórico"), el("p", { class: "sub" }, "Carregando…"));
-  Promise.all([carregarHistorico(), carregarDesempenho()]).then(([simulados, desempenho]) => {
-    if (telaAtual !== telaConfig) return;
-    const porTema = desempenho
-      .map((t) => ({ ...t, pct: Math.round((t.acertos / t.respondidas) * 100) }))
-      .sort((a, b) => a.pct - b.pct);
-    preencher(caixa,
-      el("h2", {}, "Seu histórico"),
-      !simulados.length
-        ? el("p", { class: "sub" }, "Você ainda não concluiu nenhum simulado. Os resultados ficam salvos aqui.")
-        : [
-          el("div", { class: "lista-simulados" }, simulados.map((s) => el("div", { class: "simulado-linha" },
-            el("span", { class: "quando" }, formatarData(s.iniciado_em)),
-            el("span", { class: "detalhe" }, `${s.total} questões · ${s.modo === "final" ? "gabarito no final" : "gabarito por pergunta"} · ${formatarTempo(s.tempo_ms)}`),
-            el("strong", { class: "pct " + (s.acertos / s.total >= 0.7 ? "ok" : "err") }, `${Math.round((s.acertos / s.total) * 100)}%`),
-            el("span", { class: "detalhe" }, `${s.acertos}/${s.total}`)))),
-          porTema.length > 0 && el("h3", {}, "Acertos por tema (acumulado)"),
-          porTema.map((t) => el("div", { class: "tema-linha" },
-            el("span", { class: "tema-nome" }, t.tema),
-            el("div", { class: "tema-barra" }, el("div", { style: `width:${t.pct}%` })),
-            el("span", { class: "tema-pct" }, `${t.acertos}/${t.respondidas}`))),
-        ]);
-  }).catch((e) => {
-    preencher(caixa, el("h2", {}, "Seu histórico"), el("p", { class: "erro" }, `Não foi possível carregar o histórico: ${e.message}`));
-  });
-  return caixa;
-}
-
-function iniciar(questoes, modo) {
-  estado = {
-    modo, // "porPergunta" | "final"
+function novoEstado(registro, questoes, respostas) {
+  return {
+    id: registro.id,
+    prova: registro.prova,
+    modo: registro.modo, // "porPergunta" | "final"
     questoes,
-    respostas: {},   // id da questão -> letra escolhida
-    confirmadas: {}, // id da questão -> true (só no modo porPergunta)
+    respostas,           // id da questão -> letra escolhida
+    confirmadas: {},     // id da questão -> true (só no modo porPergunta)
     atual: 0,
-    inicio: Date.now(),
-    fim: null,
+    inicio: new Date(registro.iniciado_em).getTime(),
+    fim: registro.finalizado_em ? new Date(registro.finalizado_em).getTime() : null,
     filtro: "todas",
-    salvo: null, // null = ainda não gravado; "ok" | mensagem de erro
+    salvo: null,         // null = ainda não gravado; "salvando" | "ok" | mensagem de erro
   };
+}
+
+// Cria o simulado no banco e abre a primeira questão
+async function iniciar(questoes, modo, prova = MISTA) {
+  const registro = await criarSimulado({ user_id: usuario.id, prova, modo, questoes });
+  estado = novoEstado(registro, questoes, {});
+  estado.inicio = Date.now(); // relógio local: evita diferença com o relógio do servidor
   abrir(telaQuestao);
+}
+
+// Reabre um simulado do histórico: concluído vai para o resultado; em
+// andamento continua da primeira questão ainda não respondida
+async function abrirSimulado(registro) {
+  const porId = Object.fromEntries(QUESTOES.map((q) => [q.id, q]));
+  const questoes = registro.questoes_ids.map((id) => porId[id]).filter(Boolean);
+  if (questoes.length !== registro.questoes_ids.length) {
+    alert("Algumas questões deste simulado não estão mais no banco.");
+    return;
+  }
+  let respostas;
+  try { respostas = await carregarRespostas(registro.id); }
+  catch (e) { alert(`Não foi possível abrir: ${e.message}`); return; }
+
+  estado = novoEstado(registro, questoes, respostas);
+  if (registro.finalizado_em) {
+    estado.salvo = "ok";
+    abrir(telaResultado);
+  } else {
+    if (registro.modo === "porPergunta") for (const id in respostas) estado.confirmadas[id] = true;
+    const primeira = questoes.findIndex((q) => !respostas[q.id]);
+    estado.atual = primeira === -1 ? questoes.length - 1 : primeira;
+    abrir(telaQuestao);
+  }
+}
+
+// Grava uma resposta em segundo plano; a gravação final refaz tudo de novo,
+// então uma falha aqui não perde dados.
+function gravarResposta(q) {
+  salvarResposta(estado.id, q, estado.respostas[q.id]).catch((e) => console.warn("resposta não gravada:", e.message));
 }
 
 // ---------- Tela 2: questão ----------
@@ -443,14 +568,14 @@ function telaQuestao() {
     }
     return el("button", {
       class: classe, disabled: revelada,
-      onclick: () => { respostas[q.id] = letra; redesenhar(); },
+      onclick: () => { respostas[q.id] = letra; if (modo === "final") gravarResposta(q); redesenhar(); },
     }, el("span", { class: "letra" }, letra), el("span", {}, rico(q.alternativas[letra])));
   });
 
   let botoes;
   if (modo === "porPergunta") {
     if (!revelada) {
-      acaoPrimaria = escolhida ? () => { confirmadas[q.id] = true; redesenhar(); } : null;
+      acaoPrimaria = escolhida ? () => { confirmadas[q.id] = true; gravarResposta(q); redesenhar(); } : null;
       botoes = [el("span"), el("button", { class: "primary", disabled: !escolhida, onclick: acaoPrimaria }, "Confirmar resposta")];
     } else {
       acaoPrimaria = ultima ? () => abrir(telaResultado) : () => irPara(atual + 1);
@@ -469,7 +594,7 @@ function telaQuestao() {
   relogio = setInterval(() => { tempo.textContent = formatarTempo(Date.now() - estado.inicio); }, 1000);
 
   const sair = () => {
-    if (confirm("Sair do simulado? As respostas serão perdidas.")) abrir(telaConfig);
+    if (confirm("Sair do simulado? Ele fica salvo como \"em andamento\" e você pode continuar pelo painel.")) abrir(telaPainel);
   };
 
   const respondidas = questoes.filter((x) => respostas[x.id]).length;
@@ -528,6 +653,7 @@ document.addEventListener("keydown", (e) => {
 
   if (letras(q).includes(letra) && !revelada) {
     estado.respostas[q.id] = letra;
+    if (estado.modo === "final") gravarResposta(q);
     redesenhar();
   } else if (e.key === "Enter" && acaoPrimaria) {
     e.preventDefault();
@@ -570,7 +696,7 @@ function blocoGabarito(q, escolhida) {
 function gravarResultado() {
   const este = estado;
   este.salvo = "salvando";
-  salvarSimulado(este, usuario.id)
+  finalizarSimulado(este)
     .then(() => { este.salvo = "ok"; })
     .catch((e) => { este.salvo = e.message; })
     .finally(() => { if (estado === este && telaAtual === telaResultado) redesenhar(); });
@@ -629,6 +755,7 @@ function telaResultado() {
     el("div", { class: "numero " + classe }, el("strong", {}, valor), el("span", {}, rotulo));
 
   mostrar(
+    el("button", { class: "link voltar", onclick: () => abrir(telaPainel) }, "← Voltar ao painel"),
     el("h1", {}, "Resultado"),
     el("div", { class: "card placar" },
       el("div", { class: "nota" }, `${pct}%`),
@@ -644,9 +771,10 @@ function telaResultado() {
           : [`Não foi possível salvar: ${estado.salvo}. `, el("button", { class: "link", onclick: () => { gravarResultado(); redesenhar(); } }, "Tentar de novo")]),
       el("div", { class: "actions centro" },
         paraRefazer.length > 0 && el("button", {
-          onclick: () => iniciar(embaralhar(paraRefazer), estado.modo),
+          onclick: () => iniciar(embaralhar(paraRefazer), estado.modo, estado.prova).catch((e) => alert(e.message)),
         }, `Refazer as ${paraRefazer.length} que não acertei`),
-        el("button", { class: "primary", onclick: () => abrir(telaConfig) }, "Novo simulado"))),
+        el("button", { onclick: () => abrir(telaPainel) }, "Voltar ao painel"),
+        el("button", { class: "primary", onclick: () => abrir(telaNovo) }, "Novo simulado"))),
     porTema.length > 1 && el("div", { class: "card" },
       el("h2", {}, "Desempenho por tema"),
       porTema.map((t) => el("div", { class: "tema-linha" },

@@ -43,44 +43,61 @@ async function carregarQuestoes() {
   return linhas.map((l) => Object.fromEntries(Object.entries(l).filter(([, v]) => v != null)));
 }
 
-// ---------- Histórico ----------
+// ---------- Simulados ----------
+// Um simulado é criado no banco ao começar (finalizado_em nulo = em andamento),
+// cada resposta é gravada na hora e, ao terminar, o resumo é atualizado.
 
-// Grava um simulado terminado e suas respostas; devolve o id gerado
-async function salvarSimulado(estado, user_id) {
-  const { questoes, respostas, modo, inicio, fim } = estado;
-  const acertou = (q) => respostas[q.id] === q.correta;
-  const simulado = ouErro(await db.from("simulados").insert({
-    user_id,
-    modo,
+const CAMPOS_SIMULADO = "id, prova, modo, questoes_ids, iniciado_em, finalizado_em, tempo_ms, total, acertos, erros, brancos";
+
+async function criarSimulado({ user_id, prova, modo, questoes }) {
+  return ouErro(await db.from("simulados").insert({
+    user_id, prova, modo,
     questoes_ids: questoes.map((q) => q.id),
-    iniciado_em: new Date(inicio).toISOString(),
+    total: questoes.length,
+  }).select(CAMPOS_SIMULADO).single());
+}
+
+async function salvarResposta(simulado_id, q, escolhida) {
+  ouErro(await db.from("respostas").upsert({
+    simulado_id, questao_id: q.id, tema: q.tema,
+    escolhida: escolhida || null,
+    acertou: escolhida === q.correta,
+  }, { onConflict: "simulado_id,questao_id" }));
+}
+
+async function finalizarSimulado(estado) {
+  const { id, questoes, respostas, inicio, fim } = estado;
+  const acertou = (q) => respostas[q.id] === q.correta;
+  ouErro(await db.from("respostas").upsert(questoes.map((q) => ({
+    simulado_id: id, questao_id: q.id, tema: q.tema,
+    escolhida: respostas[q.id] || null,
+    acertou: acertou(q),
+  })), { onConflict: "simulado_id,questao_id" }));
+  ouErro(await db.from("simulados").update({
     finalizado_em: new Date(fim).toISOString(),
     tempo_ms: fim - inicio,
-    total: questoes.length,
     acertos: questoes.filter(acertou).length,
     erros: questoes.filter((q) => respostas[q.id] && !acertou(q)).length,
     brancos: questoes.filter((q) => !respostas[q.id]).length,
-  }).select("id").single());
-
-  ouErro(await db.from("respostas").insert(questoes.map((q) => ({
-    simulado_id: simulado.id,
-    questao_id: q.id,
-    tema: q.tema,
-    escolhida: respostas[q.id] || null,
-    acertou: acertou(q),
-  }))));
-  return simulado.id;
+  }).eq("id", id));
 }
 
-async function carregarHistorico(limite = 10) {
-  return ouErro(await db.from("simulados")
-    .select("id, modo, iniciado_em, tempo_ms, total, acertos, erros, brancos")
-    .not("finalizado_em", "is", null)
-    .order("iniciado_em", { ascending: false })
-    .limit(limite));
+async function carregarHistorico(limite = 50) {
+  return ouErro(await db.from("simulados").select(CAMPOS_SIMULADO)
+    .order("iniciado_em", { ascending: false }).limit(limite));
 }
 
-// Acumulado de acertos por tema em todos os simulados do usuário
+// Respostas já gravadas de um simulado: { questao_id: letra }
+async function carregarRespostas(simulado_id) {
+  const linhas = ouErro(await db.from("respostas").select("questao_id, escolhida").eq("simulado_id", simulado_id));
+  return Object.fromEntries(linhas.filter((l) => l.escolhida).map((l) => [l.questao_id, l.escolhida]));
+}
+
+async function apagarSimulado(id) {
+  ouErro(await db.from("simulados").delete().eq("id", id));
+}
+
+// Acumulado de acertos por tema em todos os simulados concluídos do usuário
 async function carregarDesempenho() {
   return ouErro(await db.from("desempenho_por_tema").select("tema, respondidas, acertos"));
 }
