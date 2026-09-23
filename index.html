@@ -5,10 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Simulado</title>
   <link rel="stylesheet" href="style.css">
+  <script>
+    // Aplica o tema e o estado do menu antes da primeira pintura, para não piscar
+    try {
+      const t = localStorage.getItem("simulado.tema");
+      if (t) document.documentElement.dataset.theme = t;
+      if (localStorage.getItem("simulado.menu") === "fechado") document.documentElement.classList.add("menu-fechado");
+    } catch (e) {}
+  </script>
 </head>
 <body>
-  <header id="barra"><span class="marca">Simulado</span><span id="conta" class="conta"></span></header>
-  <main id="app"></main>
+  <div id="shell">
+    <aside id="menu" aria-label="Menu principal"></aside>
+    <div id="pano" class="pano"></div>
+    <div id="conteudo">
+      <header id="topo-movel"></header>
+      <main id="app"></main>
+    </div>
+  </div>
   <!-- As questões vêm do banco (Supabase); os arquivos em questoes/ são a fonte
        usada para carregar o banco e ficam no repositório como referência. -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>

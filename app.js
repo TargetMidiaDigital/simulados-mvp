@@ -1,5 +1,7 @@
 const app = document.getElementById("app");
-const conta = document.getElementById("conta");
+const menu = document.getElementById("menu");
+const topoMovel = document.getElementById("topo-movel");
+const pano = document.getElementById("pano");
 
 // Banco de questões (carregado do Supabase após o login) e usuário logado
 let QUESTOES = [];
@@ -43,7 +45,9 @@ let telaAtual = null;
 function abrir(tela) {
   telaAtual = tela;
   document.body.classList.toggle("largo", tela === telaQuestao);
+  document.body.classList.remove("menu-aberto");
   tela();
+  marcarItemAtivo();
   window.scrollTo(0, 0);
 }
 
@@ -149,11 +153,162 @@ function telaDefinirSenha() {
   senha.focus();
 }
 
-function montarConta() {
-  preencher(conta, usuario && [
-    el("span", { class: "email" }, usuario.email),
-    el("button", { class: "mini", onclick: async () => { await auth.sair(); usuario = null; QUESTOES = []; montarConta(); abrir(telaLogin); } }, "Sair"),
-  ]);
+async function sairDaConta() {
+  await auth.sair();
+  usuario = null;
+  QUESTOES = [];
+  montarConta();
+  abrir(telaLogin);
+}
+
+// ---------- Menu lateral ----------
+
+// Ícones em SVG (traço simples, herdam a cor do texto)
+const ICONES = {
+  logo: "M12 2a3 3 0 0 1 3 3v1h3v3h-3v9.5a5.5 5.5 0 0 0 5-4.5h3a8.5 8.5 0 0 1-17 0h3a5.5 5.5 0 0 0 5 4.5V9H6V6h3V5a3 3 0 0 1 3-3z",
+  painel: "M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",
+  novo: "M12 5v14M5 12h14",
+  config: "M4 7h10M18 7h2M4 17h2M10 17h10M14 4.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM6 14.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z",
+  lua: "M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z",
+  sol: "M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4",
+  recolher: "M4 5h16v14H4zM9 5v14",
+  sair: "M10 17l5-5-5-5M15 12H3M12 3h7v18h-7",
+  hamburguer: "M4 7h16M4 12h16M4 17h16",
+};
+const icone = (nome) => {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("class", "ico");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", ICONES[nome]);
+  svg.append(path);
+  return svg;
+};
+
+const ITENS_MENU = [
+  { chave: "painel", rotulo: "Painel", ico: "painel", tela: () => telaPainel },
+  { chave: "novo", rotulo: "Novo simulado", ico: "novo", tela: () => telaNovo },
+];
+
+const temaAtual = () => document.documentElement.dataset.theme
+  || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+
+function alternarTema() {
+  const novo = temaAtual() === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = novo;
+  try { localStorage.setItem("simulado.tema", novo); } catch (e) { /* sem armazenamento */ }
+  montarMenu();
+}
+
+function alternarMenu() {
+  const fechado = document.documentElement.classList.toggle("menu-fechado");
+  try { localStorage.setItem("simulado.menu", fechado ? "fechado" : "aberto"); } catch (e) { /* ignora */ }
+}
+
+function marcarItemAtivo() {
+  for (const b of menu.querySelectorAll("[data-chave]")) {
+    const item = ITENS_MENU.find((i) => i.chave === b.dataset.chave);
+    const ativo = item ? item.tela() === telaAtual : b.dataset.chave === "config" && telaAtual === telaConfiguracoes;
+    b.classList.toggle("ativo", ativo);
+    if (ativo) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+  }
+}
+
+function itemMenu(chave, rotulo, ico, onclick, extra) {
+  return el("button", { class: "menu-item", "data-chave": chave, title: rotulo, onclick },
+    icone(ico), el("span", { class: "rotulo-item" }, rotulo), extra);
+}
+
+function montarMenu() {
+  document.body.classList.toggle("com-menu", !!usuario);
+  if (!usuario) { preencher(menu); preencher(topoMovel); return; }
+
+  const iniciais = usuario.email.slice(0, 2).toUpperCase();
+  const escuro = temaAtual() === "dark";
+
+  preencher(menu,
+    el("div", { class: "menu-topo" },
+      el("button", { class: "marca-btn", title: "Simulado", onclick: () => abrir(telaPainel) },
+        el("span", { class: "logo" }, icone("logo")), el("span", { class: "rotulo-item marca" }, "Simulado")),
+      el("button", { class: "recolher", title: "Recolher ou expandir o menu", "aria-label": "Recolher menu", onclick: alternarMenu }, icone("recolher"))),
+    el("nav", { class: "menu-secao" },
+      el("span", { class: "menu-titulo rotulo-item" }, "Menu"),
+      ITENS_MENU.map((i) => itemMenu(i.chave, i.rotulo, i.ico, () => abrir(i.tela())))),
+    el("div", { class: "menu-rodape" },
+      itemMenu("config", "Configurações", "config", () => abrir(telaConfiguracoes)),
+      itemMenu("tema", escuro ? "Modo claro" : "Modo escuro", escuro ? "sol" : "lua", alternarTema),
+      el("div", { class: "usuario" },
+        el("button", { class: "usuario-btn", title: usuario.email, onclick: () => abrir(telaConfiguracoes) },
+          el("span", { class: "avatar" }, iniciais),
+          el("span", { class: "usuario-texto rotulo-item" },
+            el("strong", {}, usuario.email.split("@")[0]),
+            el("small", {}, usuario.email))),
+        el("button", { class: "sair-btn rotulo-item", title: "Sair da conta", "aria-label": "Sair da conta", onclick: sairDaConta }, icone("sair")))));
+
+  // Barra do celular: abre o menu como gaveta
+  preencher(topoMovel,
+    el("button", { class: "hamburguer", "aria-label": "Abrir menu", onclick: () => document.body.classList.toggle("menu-aberto") }, icone("hamburguer")),
+    el("span", { class: "marca" }, "Simulado"),
+    el("button", { class: "avatar", title: usuario.email, onclick: () => abrir(telaConfiguracoes) }, iniciais));
+  marcarItemAtivo();
+}
+pano.addEventListener("click", () => document.body.classList.remove("menu-aberto"));
+const montarConta = montarMenu;
+
+// ---------- Configurações da conta ----------
+
+function telaConfiguracoes() {
+  pararRelogio();
+  const erro = el("p", { class: "erro", hidden: true });
+  const okMsg = el("p", { class: "salvo ok", hidden: true }, "Senha alterada com sucesso.");
+  const [lAtual, atual] = campo("Senha atual", { type: "password", id: "atual", autocomplete: "current-password", required: true });
+  const [lNova, nova] = campo("Nova senha", { type: "password", id: "nova", autocomplete: "new-password", minlength: 8, required: true });
+  const [lConf, conf] = campo("Repita a nova senha", { type: "password", id: "conf", autocomplete: "new-password", required: true });
+  const botao = el("button", { class: "primary grande", type: "submit" }, "Alterar senha");
+
+  const mostrarErro = (m) => { erro.textContent = m; erro.hidden = false; okMsg.hidden = true; botao.disabled = false; };
+
+  const form = el("form", {
+    class: "card form-login",
+    onsubmit: async (e) => {
+      e.preventDefault();
+      erro.hidden = true; okMsg.hidden = true;
+      if (nova.value !== conf.value) { mostrarErro("As senhas novas não conferem."); return; }
+      if (nova.value === atual.value) { mostrarErro("A nova senha deve ser diferente da atual."); return; }
+      botao.disabled = true;
+      try {
+        // Confirma a senha atual antes de trocar (o Supabase não exige, mas evita troca por alguém que pegou a sessão aberta)
+        await auth.entrar(usuario.email, atual.value);
+        await auth.definirSenha(nova.value);
+        form.reset();
+        okMsg.hidden = false;
+        botao.disabled = false;
+      } catch (err) {
+        mostrarErro(/invalid login/i.test(err.message) ? "Senha atual incorreta." : err.message);
+      }
+    },
+  }, lAtual, atual, lNova, nova, lConf, conf, erro, okMsg, botao);
+
+  const criada = usuario.created_at ? formatarData(usuario.created_at) : "—";
+  const ultimoLogin = usuario.last_sign_in_at ? formatarData(usuario.last_sign_in_at) : "—";
+
+  mostrar(
+    el("button", { class: "link voltar", onclick: () => abrir(telaPainel) }, "← Voltar ao painel"),
+    el("h1", {}, "Configurações"),
+    el("p", { class: "sub" }, "Dados da sua conta e alteração de senha."),
+    el("div", { class: "card" },
+      el("h2", {}, "Conta"),
+      el("dl", { class: "dados-conta" },
+        el("dt", {}, "E-mail"), el("dd", {}, usuario.email),
+        el("dt", {}, "Conta criada em"), el("dd", {}, criada),
+        el("dt", {}, "Último acesso"), el("dd", {}, ultimoLogin)),
+      el("p", { class: "hint" }, "Para trocar o e-mail, fale com quem administra o simulado.")),
+    el("h2", { class: "titulo-secao" }, "Alterar senha"),
+    form,
+    el("div", { class: "card" },
+      el("h2", {}, "Sessão"),
+      el("p", { class: "hint" }, "Sai da conta neste navegador. Seus simulados ficam salvos."),
+      el("button", { onclick: sairDaConta }, "Sair da conta")));
 }
 
 // Com o usuário autenticado: carrega as questões e abre a tela inicial
@@ -472,6 +627,7 @@ function novoEstado(registro, questoes, respostas) {
     inicio: new Date(registro.iniciado_em).getTime(),
     fim: registro.finalizado_em ? new Date(registro.finalizado_em).getTime() : null,
     filtro: "todas",
+    marcadas: {},        // id da questão -> true (marcada para rever; só nesta sessão)
     salvo: null,         // null = ainda não gravado; "salvando" | "ok" | mensagem de erro
   };
 }
@@ -538,11 +694,12 @@ function podeIrPara(indice) {
 }
 
 function navegador() {
-  const { questoes, atual, modo, respostas, confirmadas } = estado;
+  const { questoes, atual, modo, respostas, confirmadas, marcadas } = estado;
   return el("div", { class: "navegador" }, questoes.map((q, i) => {
     let classe = "ponto";
     if (modo === "porPergunta" && confirmadas[q.id]) classe += respostas[q.id] === q.correta ? " certa" : " errada";
     else if (respostas[q.id]) classe += " respondida";
+    if (marcadas[q.id]) classe += " marcada";
     if (i === atual) classe += " atual";
     return el("button", {
       class: classe, disabled: !podeIrPara(i), "aria-label": `Questão ${i + 1}`,
@@ -551,40 +708,67 @@ function navegador() {
   }));
 }
 
+const CHECK = "M5 12l5 5 9-10";
+const XIS = "M6 6l12 12M18 6L6 18";
+const ESTRELA = "M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z";
+const svgIcone = (d, classe) => {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24"); svg.setAttribute("class", "ico " + (classe || ""));
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path"); path.setAttribute("d", d);
+  svg.append(path); return svg;
+};
+
+function alternarMarcada(q) {
+  if (estado.marcadas[q.id]) delete estado.marcadas[q.id]; else estado.marcadas[q.id] = true;
+  redesenhar();
+}
+
 function telaQuestao() {
-  const { questoes, atual, modo, respostas, confirmadas } = estado;
+  const { questoes, atual, modo, respostas, confirmadas, marcadas } = estado;
   const q = questoes[atual];
   const escolhida = respostas[q.id];
   const revelada = modo === "porPergunta" && confirmadas[q.id];
   const ultima = atual === questoes.length - 1;
+  const respondidas = questoes.filter((x) => respostas[x.id]).length;
+  const acertosAteAqui = modo === "porPergunta" ? questoes.filter((x) => confirmadas[x.id] && respostas[x.id] === x.correta).length : null;
 
   const alts = letras(q).map((letra) => {
-    let classe = "alt leitura";
+    let classe = "alt leitura", estadoIco = null;
     if (revelada) {
-      if (letra === q.correta) classe += " certa";
-      else if (letra === escolhida) classe += " errada";
+      if (letra === q.correta) { classe += " certa"; estadoIco = svgIcone(CHECK, "alt-estado"); }
+      else if (letra === escolhida) { classe += " errada"; estadoIco = svgIcone(XIS, "alt-estado"); }
     } else if (letra === escolhida) {
-      classe += " selecionada";
+      classe += " selecionada"; estadoIco = svgIcone(CHECK, "alt-estado");
     }
     return el("button", {
-      class: classe, disabled: revelada,
+      class: classe, disabled: revelada, "aria-pressed": String(letra === escolhida),
       onclick: () => { respostas[q.id] = letra; if (modo === "final") gravarResposta(q); redesenhar(); },
-    }, el("span", { class: "letra" }, letra), el("span", {}, rico(q.alternativas[letra])));
+    }, el("span", { class: "letra" }, letra), el("span", { class: "alt-texto" }, rico(q.alternativas[letra])), estadoIco);
   });
 
   let botoes;
+  const contador = el("span", { class: "contador" }, `${atual + 1} / ${questoes.length}`);
   if (modo === "porPergunta") {
     if (!revelada) {
       acaoPrimaria = escolhida ? () => { confirmadas[q.id] = true; gravarResposta(q); redesenhar(); } : null;
-      botoes = [el("span"), el("button", { class: "primary", disabled: !escolhida, onclick: acaoPrimaria }, "Confirmar resposta")];
+      botoes = [
+        el("button", { disabled: atual === 0, onclick: () => irPara(atual - 1) }, "Anterior"),
+        contador,
+        el("button", { class: "primary", disabled: !escolhida, onclick: acaoPrimaria }, escolhida ? "Confirmar resposta" : "Escolha uma alternativa"),
+      ];
     } else {
       acaoPrimaria = ultima ? () => abrir(telaResultado) : () => irPara(atual + 1);
-      botoes = [el("span"), el("button", { class: "primary", onclick: acaoPrimaria }, ultima ? "Ver resultado" : "Próxima")];
+      botoes = [
+        el("button", { disabled: atual === 0, onclick: () => irPara(atual - 1) }, "Anterior"),
+        contador,
+        el("button", { class: "primary", onclick: acaoPrimaria }, ultima ? "Ver resultado" : "Próxima questão"),
+      ];
     }
   } else {
     acaoPrimaria = ultima ? finalizar : () => irPara(atual + 1);
     botoes = [
       el("button", { disabled: atual === 0, onclick: () => irPara(atual - 1) }, "Anterior"),
+      contador,
       el("button", { class: "primary", onclick: acaoPrimaria }, ultima ? "Finalizar simulado" : "Próxima"),
     ];
   }
@@ -597,30 +781,49 @@ function telaQuestao() {
     if (confirm("Sair do simulado? Ele fica salvo como \"em andamento\" e você pode continuar pelo painel.")) abrir(telaPainel);
   };
 
-  const respondidas = questoes.filter((x) => respostas[x.id]).length;
+  const pct = Math.round((respondidas / questoes.length) * 100);
+  const legenda = (classe, texto) => el("span", { class: "legenda-item" }, el("span", { class: "ponto mini-ponto " + classe }), texto);
+  const tecla = (...ks) => ks.flatMap((k, i) => [i > 0 && " ", el("kbd", {}, k)]);
 
-  // Layout em duas colunas: pergunta | painel com tempo e números das questões
+  // Layout em duas colunas: pergunta | painel com tempo, progresso e grade
   mostrar(
     el("div", { class: "layout-questao" },
       el("div", { class: "coluna-pergunta" },
-        el("div", { class: "topbar" },
-          el("span", {}, el("strong", {}, `Questão ${atual + 1}`), ` de ${questoes.length}`),
-          el("span", { class: "tema" }, q.tema || ""),
-          q.prova && el("span", { class: "prova" }, q.prova)),
-        el("div", { class: "card" },
+        el("div", { class: "q-cabecalho" },
+          el("div", { class: "q-titulo" },
+            el("span", {}, el("strong", {}, `Questão ${atual + 1}`), ` de ${questoes.length}`),
+            el("span", { class: "tema" }, q.tema || ""),
+            q.prova && el("span", { class: "prova" }, q.prova)),
+          el("button", {
+            class: "mini marcar" + (marcadas[q.id] ? " ativa" : ""), "aria-pressed": String(!!marcadas[q.id]),
+            title: "Marcar para rever depois (M)", onclick: () => alternarMarcada(q),
+          }, svgIcone(ESTRELA), marcadas[q.id] ? "Marcada para rever" : "Rever depois")),
+        el("div", { class: "progresso", role: "progressbar", "aria-valuenow": pct, "aria-valuemin": 0, "aria-valuemax": 100 },
+          el("div", { style: `width:${pct}%` })),
+        el("div", { class: "card q-card" },
           enunciadoEl(q),
           el("div", { class: "alts" }, alts),
-          revelada && blocoGabarito(q, escolhida),
-          el("div", { class: "actions" }, botoes)),
-        el("p", { class: "atalhos" },
-          "Atalhos: ", el("kbd", {}, "A"), "–", el("kbd", {}, letras(q).slice(-1)[0]), " marca · ",
-          el("kbd", {}, "Enter"), " confirma/avança",
-          modo === "final" && [" · ", el("kbd", {}, "←"), " ", el("kbd", {}, "→"), " navega"])),
+          revelada && blocoGabarito(q, escolhida)),
+        el("div", { class: "barra-acoes" }, botoes)),
       el("aside", { class: "painel-lateral card" },
         el("div", { class: "painel-tempo" }, el("span", { class: "rotulo" }, "Tempo"), tempo),
+        el("div", { class: "painel-progresso" },
+          el("span", { class: "rotulo" }, "Progresso"),
+          el("div", { class: "painel-progresso-num" }, el("strong", {}, respondidas), ` de ${questoes.length} respondidas`),
+          el("div", { class: "progresso fina" }, el("div", { style: `width:${pct}%` })),
+          acertosAteAqui !== null && el("div", { class: "detalhe" }, `${acertosAteAqui} ${acertosAteAqui === 1 ? "acerto" : "acertos"} até aqui`)),
         el("div", { class: "painel-questoes" },
-          el("span", { class: "rotulo" }, `Questões · ${respondidas} de ${questoes.length} respondidas`),
-          navegador()),
+          el("span", { class: "rotulo" }, "Questões"),
+          navegador(),
+          el("div", { class: "legenda" },
+            modo === "porPergunta" ? [legenda("certa", "Certa"), legenda("errada", "Errada")] : legenda("respondida", "Respondida"),
+            legenda("marcada", "Rever"))),
+        el("div", { class: "atalhos-painel" },
+          el("span", { class: "rotulo" }, "Atalhos"),
+          el("div", {}, tecla("A"), "–", tecla(letras(q).slice(-1)[0]), " marca a alternativa"),
+          el("div", {}, tecla("Enter"), modo === "porPergunta" ? " confirma / avança" : " próxima"),
+          modo === "final" && el("div", {}, tecla("←", "→"), " navega"),
+          el("div", {}, tecla("M"), " marcar para rever")),
         el("button", { class: "mini sair", onclick: sair }, "Sair do simulado"))));
 
   // Mantém o número da questão atual visível dentro da grade (que rola sozinha
@@ -635,12 +838,11 @@ function telaQuestao() {
 
 function finalizar() {
   const emBranco = estado.questoes.filter((q) => !estado.respostas[q.id]).length;
-  if (emBranco > 0) {
-    const msg = emBranco === 1
-      ? "Há 1 questão sem resposta. Finalizar mesmo assim?"
-      : `Há ${emBranco} questões sem resposta. Finalizar mesmo assim?`;
-    if (!confirm(msg)) return;
-  }
+  const marcadas = Object.keys(estado.marcadas).length;
+  const avisos = [];
+  if (emBranco > 0) avisos.push(emBranco === 1 ? "1 questão sem resposta" : `${emBranco} questões sem resposta`);
+  if (marcadas > 0) avisos.push(marcadas === 1 ? "1 questão marcada para rever" : `${marcadas} questões marcadas para rever`);
+  if (avisos.length && !confirm(`Há ${avisos.join(" e ")}. Finalizar mesmo assim?`)) return;
   abrir(telaResultado);
 }
 
@@ -655,6 +857,8 @@ document.addEventListener("keydown", (e) => {
     estado.respostas[q.id] = letra;
     if (estado.modo === "final") gravarResposta(q);
     redesenhar();
+  } else if (letra === "M") {
+    alternarMarcada(q);
   } else if (e.key === "Enter" && acaoPrimaria) {
     e.preventDefault();
     acaoPrimaria();
@@ -665,27 +869,29 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-// Gabarito comentado: veredito + explicação de cada alternativa
+// Gabarito comentado: veredito + análise + explicação de cada alternativa
 function blocoGabarito(q, escolhida) {
   const acertou = escolhida === q.correta;
   const veredito = !escolhida
-    ? el("div", { class: "veredito err" }, `Não respondida — resposta correta: ${q.correta}`)
+    ? el("div", { class: "veredito err" }, svgIcone(XIS), el("div", {}, el("strong", {}, "Não respondida"), el("span", {}, `Resposta correta: ${q.correta}`)))
     : acertou
-      ? el("div", { class: "veredito ok" }, `Você acertou! Resposta correta: ${q.correta}`)
-      : el("div", { class: "veredito err" }, `Você errou. Marcou ${escolhida}; a correta é ${q.correta}`);
+      ? el("div", { class: "veredito ok" }, svgIcone(CHECK), el("div", {}, el("strong", {}, "Você acertou!"), el("span", {}, `Resposta correta: ${q.correta}`)))
+      : el("div", { class: "veredito err" }, svgIcone(XIS), el("div", {}, el("strong", {}, "Você errou"), el("span", {}, `Você marcou ${escolhida} · a correta é ${q.correta}`)));
 
   const explicacoes = letras(q).map((letra) => {
     const certa = letra === q.correta;
-    return el("div", { class: "exp " + (certa ? "ok" : "err") },
-      el("span", { class: "tag" }, `${letra}) ${certa ? "Correta" : "Incorreta"}`),
-      letra === escolhida && el("span", { class: "sua" }, "(sua resposta) "),
-      rico(explicacao(q, letra)));
+    return el("div", { class: "exp " + (certa ? "ok" : "err") + (letra === escolhida ? " sua" : "") },
+      el("span", { class: "letra" }, letra),
+      el("div", { class: "exp-corpo" },
+        el("span", { class: "tag" }, certa ? "Correta" : "Incorreta", letra === escolhida && el("em", {}, " · sua resposta")),
+        el("span", {}, rico(explicacao(q, letra)))));
   });
 
   return el("div", { class: "gabarito leitura" },
     veredito,
-    q.comentario && el("div", { class: "comentario" }, rico(q.comentario)),
-    explicacoes,
+    q.comentario && el("div", { class: "comentario" }, el("span", { class: "rotulo" }, "Análise"), rico(q.comentario)),
+    el("span", { class: "rotulo" }, "Por alternativa"),
+    el("div", { class: "exps" }, explicacoes),
     q.revisar && el("div", { class: "aviso" },
       "Explicação a revisar: a letra correta vem do gabarito oficial, mas a justificativa não foi conferida na bibliografia."));
 }
