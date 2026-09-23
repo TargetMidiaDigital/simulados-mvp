@@ -45,6 +45,7 @@ let telaAtual = null;
 function abrir(tela) {
   telaAtual = tela;
   document.body.classList.toggle("largo", tela === telaQuestao);
+  document.body.classList.toggle("tela-acesso", tela === telaLogin || tela === telaDefinirSenha);
   document.body.classList.remove("menu-aberto");
   tela();
   marcarItemAtivo();
@@ -83,28 +84,42 @@ function campo(rotulo, attrs) {
   return [el("label", { class: "label", for: attrs.id }, rotulo), input];
 }
 
+// Cartão de acesso no estilo do sistema da Target: formulário centralizado
+// em um cartão branco sobre um fundo em degradê.
+function cascaAcesso(titulo, subtitulo, form) {
+  mostrar(
+    el("div", { class: "acesso" },
+      el("div", { class: "acesso-card" },
+        el("div", { class: "acesso-form" },
+          el("span", { class: "acesso-marca" }, el("span", { class: "logo" }, icone("logo")), "Simulado"),
+          el("h1", {}, titulo),
+          subtitulo && el("p", { class: "sub" }, subtitulo),
+          form))));
+}
+
 function telaLogin(aviso) {
   pararRelogio();
   const erro = el("p", { class: "erro", hidden: !aviso }, aviso || "");
-  const [lEmail, email] = campo("E-mail", { type: "email", id: "email", autocomplete: "username", required: true });
-  const [lSenha, senha] = campo("Senha", { type: "password", id: "senha", autocomplete: "current-password", required: true });
+  const [lEmail, email] = campo("E-mail", { type: "email", id: "email", autocomplete: "username", required: true, placeholder: "nome@empresa.com.br" });
+  const [lSenha, senha] = campo("Senha", { type: "password", id: "senha", autocomplete: "current-password", required: true, placeholder: "••••••••" });
   const botao = el("button", { class: "primary grande", type: "submit" }, "Entrar");
 
   const falhar = (e) => {
     erro.textContent = /invalid login/i.test(e.message) ? "E-mail ou senha incorretos." : e.message;
+    erro.classList.remove("info");
     erro.hidden = false;
     botao.disabled = false;
   };
 
   const form = el("form", {
-    class: "card form-login",
+    class: "form-login",
     onsubmit: async (e) => {
       e.preventDefault();
-      botao.disabled = true;
+      botao.disabled = true; botao.textContent = "Entrando…";
       try {
         usuario = await auth.entrar(email.value.trim(), senha.value);
         await entrarNoApp();
-      } catch (err) { falhar(err); }
+      } catch (err) { botao.textContent = "Entrar"; falhar(err); }
     },
   },
     lEmail, email, lSenha, senha, erro, botao,
@@ -115,15 +130,13 @@ function telaLogin(aviso) {
         try {
           await auth.recuperarSenha(email.value.trim());
           erro.textContent = "Se o e-mail estiver cadastrado, você receberá um link para definir uma nova senha.";
-          erro.hidden = false;
+          erro.classList.add("info"); erro.hidden = false;
         } catch (err) { falhar(err); }
       },
-    }, "Esqueci minha senha"));
+    }, "Esqueci minha senha"),
+    el("p", { class: "acesso-nota" }, "O acesso é por convite. Use o e-mail e a senha cadastrados."));
 
-  mostrar(
-    el("h1", {}, "Entrar"),
-    el("p", { class: "sub" }, "O acesso é por convite. Use o e-mail e a senha cadastrados."),
-    form);
+  cascaAcesso("Entrar", null, form);
   email.focus();
 }
 
@@ -135,11 +148,9 @@ function telaDefinirSenha() {
   const [lConf, conf] = campo("Repita a senha", { type: "password", id: "conf", autocomplete: "new-password", required: true });
   const botao = el("button", { class: "primary grande", type: "submit" }, "Salvar senha e continuar");
 
-  mostrar(
-    el("h1", {}, "Defina sua senha"),
-    el("p", { class: "sub" }, `Conta: ${usuario.email}. Escolha uma senha com pelo menos 8 caracteres.`),
+  cascaAcesso("Defina sua senha", `Conta: ${usuario.email}. Escolha uma senha com pelo menos 8 caracteres.`,
     el("form", {
-      class: "card form-login",
+      class: "form-login",
       onsubmit: async (e) => {
         e.preventDefault();
         if (senha.value !== conf.value) { erro.textContent = "As senhas não conferem."; erro.hidden = false; return; }
@@ -463,62 +474,136 @@ const provasDisponiveis = () => [...new Set(QUESTOES.map((q) => q.prova))].sort(
 
 function telaPainel() {
   pararRelogio();
-  const corpo = el("div", {}, el("p", { class: "sub" }, "Carregando histórico…"));
+  const corpo = el("div", {}, el("p", { class: "sub" }, "Carregando…"));
   mostrar(
     el("div", { class: "cabecalho-painel" },
-      el("h1", {}, "Simulados"),
-      el("button", { class: "primary", onclick: () => abrir(telaNovo) }, "Novo simulado")),
+      el("div", {}, el("h1", {}, "Painel"), el("p", { class: "sub" }, "Acompanhe seus simulados e seu desempenho")),
+      el("button", { class: "primary com-ico", onclick: () => abrir(telaNovo) }, icone("novo"), "Novo simulado")),
     corpo);
 
-  carregarHistorico().then((lista) => {
+  Promise.all([carregarHistorico(), carregarDesempenho().catch(() => [])]).then(([lista, desempenho]) => {
     if (telaAtual !== telaPainel) return;
-    preencher(corpo, painelConteudo(lista));
+    preencher(corpo, painelConteudo(lista, desempenho));
   }).catch((e) => preencher(corpo, el("p", { class: "erro" }, `Não foi possível carregar o histórico: ${e.message}`)));
 }
 
-function painelConteudo(lista) {
+// Ícones extras do painel
+Object.assign(ICONES, {
+  lista: "M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01",
+  alvo: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2z",
+  relogio: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2",
+  trofeu: "M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M10 17h4v4h-4z",
+  play: "M7 5l12 7-12 7z",
+  grafico: "M4 19h16M7 15l4-5 3 3 5-7",
+  calendario: "M5 6h14v14H5zM5 10h14M9 4v4M15 4v4",
+});
+
+const nomeDoUsuario = () => usuario.email.split("@")[0].replace(/[._-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+function painelConteudo(lista, desempenho) {
   const concluidos = lista.filter((s) => s.finalizado_em);
+  const andamento = lista.filter((s) => !s.finalizado_em);
   const ultimo = concluidos[0];
   const pct = (s) => Math.round((s.acertos / s.total) * 100);
   const corNota = (p) => (p >= 70 ? "ok" : p >= 50 ? "meio" : "err");
+  const totalQ = concluidos.reduce((n, s) => n + s.total, 0);
+  const totalAcertos = concluidos.reduce((n, s) => n + s.acertos, 0);
+  const taxa = totalQ ? Math.round((totalAcertos / totalQ) * 100) : null;
+  const media = concluidos.length ? Math.round(concluidos.reduce((n, s) => n + pct(s), 0) / concluidos.length) : null;
+  const melhor = concluidos.length ? Math.max(...concluidos.map(pct)) : null;
+  const tempoMedio = totalQ ? concluidos.reduce((n, s) => n + (s.tempo_ms || 0), 0) / totalQ : null;
+  const dataLonga = new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const hoje = dataLonga.charAt(0).toUpperCase() + dataLonga.slice(1);
 
-  const cartao = (titulo, ...conteudo) => el("div", { class: "card stat" }, el("span", { class: "rotulo" }, titulo), conteudo);
+  // Cartão de boas-vindas com os indicadores principais
+  const tile = (ico, rotulo, valor, sub) => el("div", { class: "tile" },
+    el("span", { class: "tile-topo" }, icone(ico), rotulo),
+    el("strong", {}, valor),
+    sub && el("small", {}, sub));
+  const boasVindas = el("div", { class: "card hero" },
+    el("div", { class: "hero-topo" },
+      el("div", {},
+        el("h2", {}, `Bem-vindo de volta, ${nomeDoUsuario()}`),
+        el("p", {}, "Aqui está o resumo do seu desempenho")),
+      el("span", { class: "hero-data" }, icone("calendario"), hoje)),
+    el("div", { class: "tiles" },
+      tile("lista", "Simulados feitos", concluidos.length, andamento.length ? `${andamento.length} em andamento` : "nenhum em andamento"),
+      tile("alvo", "Último resultado", ultimo ? `${pct(ultimo)}%` : "—", ultimo ? `${ultimo.acertos} de ${ultimo.total} acertos` : "faça seu primeiro simulado"),
+      tile("grafico", "Média das notas", media !== null ? `${media}%` : "—", concluidos.length > 1 ? `em ${concluidos.length} simulados` : " "),
+      tile("relogio", "Tempo por questão", tempoMedio !== null ? formatarTempo(tempoMedio) : "—", "média nos concluídos")));
 
-  const resumo = el("div", { class: "painel-topo" },
-    el("div", { class: "painel-stats" },
-      cartao("Simulados realizados", el("strong", { class: "stat-num" }, concluidos.length)),
-      cartao("Último simulado",
-        ultimo && el("div", { class: "contagem" },
-          el("span", { class: "ok" }, `${ultimo.acertos} acertos`),
-          el("span", { class: "info" }, `${ultimo.brancos} brancos`),
-          el("span", { class: "err" }, `${ultimo.erros} erros`)),
-        el("strong", { class: "stat-num" }, ultimo ? `${pct(ultimo)}%` : "—"))),
-    el("div", { class: "card grafico-card" },
-      el("span", { class: "rotulo" }, "Seu desempenho"),
-      concluidos.length >= 2
-        ? grafico(concluidos.slice(0, 12).reverse().map(pct))
-        : el("p", { class: "sub" }, "Conclua ao menos dois simulados para ver a evolução.")));
+  // Cartões de estatística com barra de progresso
+  const stat = (cor, ico, valor, rotulo, sub) => el("div", { class: "card stat stat-" + cor },
+    el("span", { class: "stat-ico" }, icone(ico)),
+    el("strong", { class: "stat-num" }, valor),
+    el("span", { class: "stat-rotulo" }, rotulo),
+    el("small", { class: "stat-sub" }, sub));
+  const stats = el("div", { class: "stats" },
+    stat("azul", "lista", totalQ, "Questões respondidas", "em simulados concluídos"),
+    stat("verde", "alvo", taxa !== null ? `${taxa}%` : "—", "Taxa de acerto", totalQ ? `${totalAcertos} acertos em ${totalQ}` : "sem dados ainda"),
+    stat("laranja", "play", andamento.length, "Em andamento", andamento.length ? "continue pelo histórico" : "nenhum simulado parado"),
+    stat("roxo", "trofeu", melhor !== null ? `${melhor}%` : "—", "Melhor nota", melhor !== null ? "seu recorde" : "sem dados ainda"));
 
+  // Evolução + acertos por tema
+  const porTema = desempenho
+    .map((t) => ({ ...t, pct: Math.round((t.acertos / t.respondidas) * 100) }))
+    .sort((a, b) => b.pct - a.pct || b.respondidas - a.respondidas);
+  const cabecalho = (titulo, sub, extra) => el("div", { class: "card-cabecalho" }, el("div", {}, el("h2", {}, titulo), el("p", {}, sub)), extra);
+
+  const serie = concluidos.slice(0, 12).reverse().map((s) => ({ v: pct(s), data: s.iniciado_em }));
+  let tendencia = null;
+  if (serie.length >= 2) {
+    const d = serie[serie.length - 1].v - serie[serie.length - 2].v;
+    tendencia = el("span", { class: "pill " + (d > 0 ? "verde" : d < 0 ? "vermelho" : "") }, d > 0 ? `▲ +${d} pts` : d < 0 ? `▼ ${d} pts` : "= igual");
+  }
+  const LIMITE_TEMAS = 6;
+  const listaTemas = el("div", { class: "temas" + (porTema.length > LIMITE_TEMAS ? " resumida" : "") },
+    porTema.map((t, i) => el("div", { class: "tema-linha" + (i >= LIMITE_TEMAS ? " extra" : "") },
+      el("span", { class: "tema-nome", title: t.tema }, t.tema),
+      el("span", { class: "tema-pct " + corNota(t.pct) }, el("strong", {}, `${t.pct}%`), el("small", {}, `${t.acertos}/${t.respondidas}`)),
+      el("div", { class: "tema-barra " + corNota(t.pct) }, el("div", { style: `width:${t.pct}%` })))));
+  const verTodos = porTema.length > LIMITE_TEMAS && el("button", {
+    class: "link", onclick: (e) => {
+      const resumida = listaTemas.classList.toggle("resumida");
+      e.target.textContent = resumida ? `Mostrar todos (${porTema.length})` : "Mostrar menos";
+    },
+  }, `Mostrar todos (${porTema.length})`);
+
+  const analises = el("div", { class: "duas-colunas" },
+    el("div", { class: "card card-grafico" },
+      cabecalho("Evolução das notas", serie.length ? `Seus últimos ${serie.length} simulados concluídos` : "Últimos simulados concluídos", tendencia),
+      serie.length >= 2
+        ? grafico(serie)
+        : el("div", { class: "vazio-grafico" },
+            icone("grafico"),
+            el("p", {}, serie.length === 1 ? "Você tem 1 simulado concluído. Conclua mais um para ver a evolução." : "Conclua ao menos dois simulados para ver a evolução."))),
+    el("div", { class: "card" },
+      cabecalho("Acertos por tema", "Do maior para o menor", porTema.length > 0 && el("span", { class: "pill" }, `${porTema.length} temas`)),
+      porTema.length
+        ? [listaTemas, verTodos]
+        : el("div", { class: "vazio-grafico" }, icone("alvo"), el("p", {}, "Aparece depois do primeiro simulado concluído."))));
+
+  // Histórico
   const linha = (s) => {
     const feito = !!s.finalizado_em;
     const nota = feito ? pct(s) : null;
-    return el("div", { class: "card linha-simulado" + (feito ? "" : " andamento") },
-      el("span", { class: "quando" }, formatarData(s.iniciado_em)),
+    return el("div", { class: "linha-simulado" + (feito ? "" : " andamento") },
+      el("span", { class: "linha-ico " + (feito ? corNota(nota) : "laranja") }, icone(feito ? "alvo" : "play")),
       el("div", { class: "nome" },
         el("strong", {}, nomeProva(s.prova)),
         el("span", { class: "detalhe" },
-          `${s.modo === "final" ? "Gabarito no final" : "Gabarito por pergunta"} · ${s.total} questões`,
+          `${formatarData(s.iniciado_em)} · ${s.modo === "final" ? "gabarito no final" : "gabarito por pergunta"} · ${s.total} questões`,
           !feito && el("span", { class: "badge-andamento" }, "Em andamento"))),
       el("span", { class: "detalhe tempo-linha" }, feito ? formatarTempo(s.tempo_ms) : "—"),
       feito
         ? el("span", { class: "contagem" },
             el("span", { class: "ok" }, s.acertos), el("span", { class: "info" }, s.brancos), el("span", { class: "err" }, s.erros))
         : el("span", { class: "contagem" }, el("span", { class: "detalhe" }, "sem resultado")),
-      feito ? el("span", { class: "nota " + corNota(nota) }, nota) : el("span"),
+      feito ? el("span", { class: "nota-selo " + corNota(nota) }, `${nota}%`) : el("span"),
       el("div", { class: "acoes" },
-        el("button", { class: "mini", onclick: () => abrirSimulado(s) }, feito ? "Ver" : "Continuar"),
+        el("button", { class: "mini" + (feito ? "" : " primary"), onclick: () => abrirSimulado(s) }, feito ? "Ver" : "Continuar"),
         el("button", {
-          class: "mini apagar", "aria-label": "Apagar simulado",
+          class: "mini apagar", "aria-label": "Apagar simulado", title: "Apagar",
           onclick: async () => {
             if (!confirm("Apagar este simulado do histórico?")) return;
             try { await apagarSimulado(s.id); abrir(telaPainel); }
@@ -526,36 +611,53 @@ function painelConteudo(lista) {
           },
         }, "🗑")));
   };
-
-  return [
-    resumo,
+  const historico = el("div", { class: "card" },
+    cabecalho("Histórico", "Seus simulados, do mais recente para o mais antigo",
+      lista.length > 0 && el("span", { class: "pill" }, `${lista.length} ${lista.length === 1 ? "simulado" : "simulados"}`)),
     lista.length
       ? el("div", { class: "lista" }, lista.map(linha))
-      : el("div", { class: "card vazio" },
+      : el("div", { class: "vazio" },
           el("p", {}, "Você ainda não fez nenhum simulado."),
-          el("button", { class: "primary", onclick: () => abrir(telaNovo) }, "Criar o primeiro")),
-  ];
+          el("button", { class: "primary", onclick: () => abrir(telaNovo) }, "Criar o primeiro")));
+
+  return [boasVindas, stats, analises, historico];
 }
 
-// Linha de evolução das notas (%), em SVG puro
-function grafico(valores) {
-  const W = 600, H = 150, px = 28, py = 22;
-  const x = (i) => px + (valores.length === 1 ? (W - 2 * px) / 2 : (i * (W - 2 * px)) / (valores.length - 1));
-  const y = (v) => py + (H - 2 * py) * (1 - v / 100);
+// Evolução das notas (%): área + linha, eixo de porcentagem e datas embaixo.
+// A proporção do SVG é fixa (não distorce o texto) e a largura acompanha o cartão.
+function grafico(serie) {
+  const W = 600, H = 250, esq = 44, dir = 16, topo = 26, base = 34, recuo = 22; // recuo: pontos afastados das bordas
+  const n = serie.length;
+  const x = (i) => esq + recuo + (n === 1 ? (W - esq - dir - 2 * recuo) / 2 : (i * (W - esq - dir - 2 * recuo)) / (n - 1));
+  const y = (v) => topo + (H - topo - base) * (1 - v / 100);
   const svg = (tag, attrs, ...filhos) => {
-    const n = document.createElementNS("http://www.w3.org/2000/svg", tag);
-    for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
-    n.append(...filhos);
-    return n;
+    const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    el.append(...filhos);
+    return el;
   };
-  const pontos = valores.map((v, i) => `${x(i)},${y(v)}`).join(" ");
-  return svg("svg", { class: "grafico", viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: "none" },
-    ...[0, 25, 50, 75, 100].map((v) => svg("line", { class: "grade", x1: px, x2: W - px, y1: y(v), y2: y(v) })),
+  const pontos = serie.map((p, i) => `${x(i)},${y(p.v)}`).join(" ");
+  const area = `M${x(0)},${y(0)} L${pontos.replace(/ /g, " L")} L${x(n - 1)},${y(0)} Z`;
+  const dataCurta = (iso) => new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+  const passoRotulo = Math.ceil(n / 6); // evita datas sobrepostas
+
+  const grad = svg("linearGradient", { id: "grad-area", x1: 0, y1: 0, x2: 0, y2: 1 },
+    svg("stop", { offset: "0%", "stop-color": "currentColor", "stop-opacity": 0.28 }),
+    svg("stop", { offset: "100%", "stop-color": "currentColor", "stop-opacity": 0.02 }));
+
+  return svg("svg", { class: "grafico", viewBox: `0 0 ${W} ${H}` },
+    svg("defs", {}, grad),
+    ...[0, 25, 50, 75, 100].flatMap((v) => [
+      svg("line", { class: "grade", x1: esq, x2: W - dir, y1: y(v), y2: y(v) }),
+      svg("text", { class: "eixo", x: esq - 8, y: y(v) + 4, "text-anchor": "end" }, `${v}%`),
+    ]),
+    svg("path", { class: "area", d: area }),
     svg("polyline", { class: "linha", points: pontos }),
-    ...valores.flatMap((v, i) => [
-      svg("circle", { class: "ponto-g", cx: x(i), cy: y(v), r: 4 }),
-      svg("text", { class: "valor", x: x(i), y: y(v) - 9, "text-anchor": "middle" }, `${v}%`),
-    ]));
+    ...serie.flatMap((p, i) => [
+      svg("circle", { class: "ponto-g", cx: x(i), cy: y(p.v), r: 5 }),
+      svg("text", { class: "valor", x: x(i), y: y(p.v) - 11, "text-anchor": "middle" }, `${p.v}%`),
+      (i % passoRotulo === 0 || i === n - 1) && svg("text", { class: "eixo", x: x(i), y: H - 10, "text-anchor": "middle" }, dataCurta(p.data)),
+    ].filter(Boolean)));
 }
 
 // ---------- Tela 1b: novo simulado ----------
@@ -986,7 +1088,7 @@ function telaResultado() {
       porTema.map((t) => el("div", { class: "tema-linha" },
         el("span", { class: "tema-nome" }, t.tema),
         el("div", { class: "tema-barra" }, el("div", { style: `width:${t.pct}%` })),
-        el("span", { class: "tema-pct" }, `${t.certas}/${t.total}`)))),
+        el("span", { class: "tema-pct" }, el("strong", {}, `${t.pct}%`), ` ${t.certas}/${t.total}`)))),
     el("div", { class: "cabecalho-revisao" },
       el("h2", {}, "Gabarito comentado"),
       el("div", { class: "chips" }, Object.entries(filtros).map(([valor, rotulo]) =>
