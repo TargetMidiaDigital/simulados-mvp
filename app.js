@@ -469,7 +469,9 @@ function explicacao(q, letra) {
 // ---------- Tela 1: painel ----------
 
 const MISTA = "Mista";
-const nomeProva = (p) => (p === MISTA ? "Mista (todas as provas)" : p);
+const nomeProva = (p) => (p === MISTA ? "Todas as matérias" : p);
+// "Provas" são as provas antigas da DPC; o resto (normas, livros) são "matérias"
+const ehProva = (p) => /^DPC\b/.test(p);
 const provasDisponiveis = () => [...new Set(QUESTOES.map((q) => q.prova))].sort();
 
 function telaPainel() {
@@ -672,6 +674,9 @@ function telaNovo() {
 
   const chip = (ativo, rotulo, onclick, extra) =>
     el("button", { class: "chip" + (ativo ? " ativo" : ""), onclick }, rotulo, extra && el("span", { class: "chip-n" }, extra));
+  const chipProva = (p) => chip(config.prova === p, p, () => { config.prova = p; redesenhar(); }, QUESTOES.filter((q) => q.prova === p).length);
+  const grupo = (titulo, chips) => chips.length > 0 && el("div", { class: "grupo-prova" },
+    el("span", { class: "grupo-titulo" }, titulo), el("div", { class: "chips" }, chips));
 
   const inputQtd = el("input", {
     type: "number", id: "qtd", min: 1, max: total, value: qtd, inputmode: "numeric",
@@ -697,14 +702,18 @@ function telaNovo() {
   mostrar(
     el("button", { class: "link voltar", onclick: () => abrir(telaPainel) }, "← Voltar ao painel"),
     el("h1", {}, "Novo simulado"),
-    el("p", { class: "sub" }, `${QUESTOES.length} questões no banco, de ${provas.length} provas.`),
+    el("p", { class: "sub" }, `${QUESTOES.length} questões no banco · ${provas.filter(ehProva).length} provas e ${provas.filter((p) => !ehProva(p)).length} ${provas.filter((p) => !ehProva(p)).length === 1 ? "matéria" : "matérias"}.`),
     el("div", { class: "card" },
       el("div", { class: "field" },
-        el("div", { class: "label" }, "Prova"),
-        el("div", { class: "chips" },
-          chip(config.prova === MISTA, "Mista", () => { config.prova = MISTA; redesenhar(); }, QUESTOES.length),
-          provas.map((p) => chip(config.prova === p, p, () => { config.prova = p; redesenhar(); }, QUESTOES.filter((q) => q.prova === p).length))),
-        el("div", { class: "hint" }, config.prova === MISTA ? "Sorteia questões de todas as provas." : `Só questões da ${config.prova}.`)),
+        el("div", { class: "label" }, "O que estudar"),
+        el("div", { class: "grupos-prova" },
+          grupo("Todas as matérias", [chip(config.prova === MISTA, "Provas + matérias", () => { config.prova = MISTA; redesenhar(); }, QUESTOES.length)]),
+          grupo("Provas", provas.filter(ehProva).map(chipProva)),
+          grupo("Matérias", provas.filter((p) => !ehProva(p)).map(chipProva))),
+        el("div", { class: "hint" },
+          config.prova === MISTA ? "Sorteia questões de todas as provas e matérias."
+            : ehProva(config.prova) ? `Só questões da prova ${config.prova}.`
+            : `Só questões da matéria ${config.prova}.`)),
       el("div", { class: "field" },
         el("label", { for: "qtd" }, "Número de questões"),
         el("div", { class: "linha-qtd" }, inputQtd, el("div", { class: "chips" }, atalhosQtd)),

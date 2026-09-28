@@ -304,6 +304,9 @@ kbd {
   font-weight: 700;
 }
 
+.grupos-prova { display: grid; gap: 14px; }
+.grupo-prova { display: grid; gap: 8px; }
+.grupo-titulo { color: var(--muted); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
 .linha-qtd { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
 input[type="number"] {
   width: 96px;
