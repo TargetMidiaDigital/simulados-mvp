@@ -304,6 +304,15 @@ kbd {
   font-weight: 700;
 }
 
+.chip-multi { display: inline-flex; align-items: center; }
+.chip-marca {
+  display: inline-grid; place-items: center;
+  width: 16px; height: 16px; margin-right: 7px;
+  border: 1.5px solid var(--border); border-radius: 5px;
+  color: var(--muted); font-size: 0.7rem; font-weight: 800; line-height: 1;
+}
+.chip-multi.ativo .chip-marca { background: var(--primary); border-color: var(--primary); color: #fff; }
+.label-dica { margin-left: 8px; color: var(--muted); font-size: 0.8rem; font-weight: 500; }
 .grupos-prova { display: grid; gap: 14px; }
 .grupo-prova { display: grid; gap: 8px; }
 .grupo-titulo { color: var(--muted); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }

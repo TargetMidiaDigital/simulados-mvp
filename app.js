@@ -12,7 +12,8 @@ const letras = (q) => Object.keys(q.alternativas);
 
 // Estado do simulado em andamento e escolhas da tela de configuração
 let estado = null;
-const config = { prova: "Mista", qtd: 10, modo: "porPergunta" };
+// provas: lista de provas/matérias escolhidas; vazia = todas
+const config = { provas: [], qtd: 10, modo: "porPergunta" };
 
 // ---------- Utilitários de DOM ----------
 
@@ -667,14 +668,27 @@ function grafico(serie) {
 function telaNovo() {
   pararRelogio();
   const provas = provasDisponiveis();
-  if (!provas.includes(config.prova) && config.prova !== MISTA) config.prova = MISTA;
-  const disponiveis = config.prova === MISTA ? QUESTOES : QUESTOES.filter((q) => q.prova === config.prova);
+  // Seleção múltipla: qualquer combinação de provas e matérias. Nada marcado (ou tudo marcado) = todas.
+  config.provas = provas.filter((p) => config.provas.includes(p));
+  if (config.provas.length === provas.length) config.provas = [];
+  const todas = config.provas.length === 0;
+  const disponiveis = todas ? QUESTOES : QUESTOES.filter((q) => config.provas.includes(q.prova));
+  const selecao = todas ? MISTA : config.provas.join(" + "); // gravado no histórico
+  const alternar = (p) => {
+    config.provas = config.provas.includes(p) ? config.provas.filter((x) => x !== p) : [...config.provas, p];
+    redesenhar();
+  };
   const total = disponiveis.length;
   const qtd = Math.max(1, Math.min(config.qtd, total));
 
   const chip = (ativo, rotulo, onclick, extra) =>
     el("button", { class: "chip" + (ativo ? " ativo" : ""), onclick }, rotulo, extra && el("span", { class: "chip-n" }, extra));
-  const chipProva = (p) => chip(config.prova === p, p, () => { config.prova = p; redesenhar(); }, QUESTOES.filter((q) => q.prova === p).length);
+  const chipProva = (p) => {
+    const ativo = config.provas.includes(p);
+    return el("button", { class: "chip chip-multi" + (ativo ? " ativo" : ""), "aria-pressed": String(ativo), onclick: () => alternar(p) },
+      el("span", { class: "chip-marca", "aria-hidden": "true" }, ativo ? "✓" : "+"), p,
+      el("span", { class: "chip-n" }, QUESTOES.filter((q) => q.prova === p).length));
+  };
   const grupo = (titulo, chips) => chips.length > 0 && el("div", { class: "grupo-prova" },
     el("span", { class: "grupo-titulo" }, titulo), el("div", { class: "chips" }, chips));
 
@@ -694,7 +708,7 @@ function telaNovo() {
     class: "primary grande",
     onclick: async () => {
       botao.disabled = true;
-      try { await iniciar(embaralhar(disponiveis).slice(0, qtd), config.modo, config.prova); }
+      try { await iniciar(embaralhar(disponiveis).slice(0, qtd), config.modo, selecao); }
       catch (e) { alert(`Não foi possível criar o simulado: ${e.message}`); botao.disabled = false; }
     },
   }, `Iniciar simulado · ${qtd} ${qtd === 1 ? "questão" : "questões"}`);
@@ -705,15 +719,14 @@ function telaNovo() {
     el("p", { class: "sub" }, `${QUESTOES.length} questões no banco · ${provas.filter(ehProva).length} provas e ${provas.filter((p) => !ehProva(p)).length} ${provas.filter((p) => !ehProva(p)).length === 1 ? "matéria" : "matérias"}.`),
     el("div", { class: "card" },
       el("div", { class: "field" },
-        el("div", { class: "label" }, "O que estudar"),
+        el("div", { class: "label" }, "O que estudar", el("span", { class: "label-dica" }, "pode marcar mais de uma")),
         el("div", { class: "grupos-prova" },
-          grupo("Todas as matérias", [chip(config.prova === MISTA, "Provas + matérias", () => { config.prova = MISTA; redesenhar(); }, QUESTOES.length)]),
+          grupo("Todas as matérias", [chip(todas, "Provas + matérias", () => { config.provas = []; redesenhar(); }, QUESTOES.length)]),
           grupo("Provas", provas.filter(ehProva).map(chipProva)),
           grupo("Matérias", provas.filter((p) => !ehProva(p)).map(chipProva))),
         el("div", { class: "hint" },
-          config.prova === MISTA ? "Sorteia questões de todas as provas e matérias."
-            : ehProva(config.prova) ? `Só questões da prova ${config.prova}.`
-            : `Só questões da matéria ${config.prova}.`)),
+          todas ? "Sorteia questões de todas as provas e matérias. Para combinar só algumas, marque as provas e matérias que quiser."
+            : `${config.provas.length === 1 ? "Selecionada" : "Selecionadas"}: ${config.provas.join(", ")} · ${total} ${total === 1 ? "questão disponível" : "questões disponíveis"}.`)),
       el("div", { class: "field" },
         el("label", { for: "qtd" }, "Número de questões"),
         el("div", { class: "linha-qtd" }, inputQtd, el("div", { class: "chips" }, atalhosQtd)),
